@@ -9,4 +9,5 @@ class AppStrings {
 
 class AppColors {
   static const Color primary_color = Color(0xFF35B4C5);
+  static const Color accent_color = Color(0xFF3990DC);
 }
