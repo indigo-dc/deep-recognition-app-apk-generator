@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:deep_app/utils/constants.dart';
-import 'package:deep_app/task/new_multi_image_task.dart';
-import 'package:deep_app/credits/credits.dart';
-import 'package:deep_app/history/history.dart';
+import 'package:deep_app/task/new_multi_image_task_widget.dart';
+import 'package:deep_app/credits/credits_widget.dart';
+import 'package:deep_app/history/history_widget.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -11,13 +11,34 @@ class Home extends StatefulWidget {
   }
 }
 
-class _HomeState extends State<Home> {
+class _HomeState extends State<Home>{
   int _currentIndex = 0;
-  final List<Widget> _children = [
-    NewMultiImageTaskPlaceholderWidget(),
-    HistoryPlaceholderWidget(Colors.green),
-    CreditsPlaceholderWidget(Colors.pink)
-  ];
+
+  NewMultiImageTaskPlaceholderWidget nmitpw;
+  HistoryPlaceholderWidget hpw;
+  CreditsPlaceholderWidget cpw;
+  List<Widget> _children;
+  Widget currentPage;
+
+  final Key keyOne = PageStorageKey('val');
+
+  @override
+  void initState() {
+    nmitpw = NewMultiImageTaskPlaceholderWidget(
+      key:keyOne
+    );
+    hpw = HistoryPlaceholderWidget(Colors.green);
+    cpw = CreditsPlaceholderWidget(Colors.pink);
+
+    _children = [
+      NewMultiImageTaskPlaceholderWidget(),
+      HistoryPlaceholderWidget(Colors.green),
+      CreditsPlaceholderWidget(Colors.pink)
+    ];
+
+    //currentPage = nmitpw;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
