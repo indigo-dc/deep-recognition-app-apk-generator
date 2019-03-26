@@ -13,30 +13,16 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home>{
   int _currentIndex = 0;
-
-  NewMultiImageTaskPlaceholderWidget nmitpw;
-  HistoryPlaceholderWidget hpw;
-  CreditsPlaceholderWidget cpw;
   List<Widget> _children;
-  Widget currentPage;
-
-  final Key keyOne = PageStorageKey('val');
 
   @override
   void initState() {
-    nmitpw = NewMultiImageTaskPlaceholderWidget(
-      key:keyOne
-    );
-    hpw = HistoryPlaceholderWidget(Colors.green);
-    cpw = CreditsPlaceholderWidget(Colors.pink);
-
     _children = [
       NewMultiImageTaskPlaceholderWidget(),
-      HistoryPlaceholderWidget(Colors.green),
-      CreditsPlaceholderWidget(Colors.pink)
+      HistoryPlaceholderWidget(Colors.white),
+      CreditsPlaceholderWidget(Colors.white)
     ];
 
-    //currentPage = nmitpw;
     super.initState();
   }
 
@@ -85,4 +71,5 @@ class _HomeState extends State<Home>{
       _currentIndex = index;
     });
   }
+  
 }
