@@ -84,14 +84,13 @@ class NewMultiImageTaskPlaceholderState extends State<NewMultiImageTaskPlacehold
               }
           ),
         ),
-        Container(
-          //height: double.negativeInfinity,
-          color: Colors.red,
+        Expanded(
+          child: Container(
+            child: Image.asset(
+              'assets/images/plant.png'
+            )
+          )
         )
-        //Image.asset(
-          //  'assets/images/plant.png',
-          //color: Colors.red,
-        //)
       ],
     );
   }
