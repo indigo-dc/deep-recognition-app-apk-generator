@@ -21,78 +21,88 @@ class NewMultiImageTaskPlaceholderWidget extends StatefulWidget {
 class NewMultiImageTaskPlaceholderState extends State<NewMultiImageTaskPlaceholderWidget> with AutomaticKeepAliveClientMixin{
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 85.0,
-      width: double.infinity,
-      color: AppColors.accent_color,
-      child: ListView.builder(
-          scrollDirection: Axis.horizontal,
-          shrinkWrap: true,
-          physics: const ClampingScrollPhysics(),
-          itemCount: widget.items.length,
-          itemBuilder: (BuildContext context, int index) {
-            final item = widget.items[index];
+    return Column(
+      children: <Widget>[
+          Container(
+          height: 85.0,
+          width: double.infinity,
+          color: AppColors.accent_color,
+          child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              shrinkWrap: true,
+              physics: ClampingScrollPhysics(),
+              itemCount: widget.items.length,
+              itemBuilder: (BuildContext context, int index) {
+                final item = widget.items[index];
 
-            if(item is ButtonItem) {
-              if(item.text == 'CAMERA'){
-                return new RaisedButton(
-                  elevation: 0.0,
-                  padding: const EdgeInsets.all(10.0),
-                  color: AppColors.accent_color,
-                  onPressed: (){
+                if(item is ButtonItem) {
+                  if(item.text == 'CAMERA'){
+                    return RaisedButton(
+                      elevation: 0.0,
+                      padding: EdgeInsets.all(10.0),
+                      color: AppColors.accent_color,
+                      onPressed: (){
 
-                  },
-                  child: new Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: <Widget>[
-                      new Icon(Icons.photo_camera),
-                      new Text('CAMERA'),
-                    ],
-                  ),
-                );
-              }else if(item.text == 'FILE'){
-                return new RaisedButton(
-                  elevation: 0.0,
-                  padding: const EdgeInsets.all(10.0),
-                  color: AppColors.accent_color,
-                  onPressed: (){
+                      },
+                      child: getButtonColumn(Icons.photo_camera, item.text)
+                    );
+                  }else if(item.text == 'FILE'){
+                    return RaisedButton(
+                      elevation: 0.0,
+                      padding: EdgeInsets.all(10.0),
+                      color: AppColors.accent_color,
+                      onPressed: (){
 
-                  },
-                  child: new Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: <Widget>[
-                      new Icon(Icons.file_upload),
-                      new Text('FILE'),
-                    ],
-                  ),
-                );
+                      },
+                      child: getButtonColumn(Icons.file_upload, item.text)
+                    );
+                  }
+                }else if(item is InfoItem) {
+                  return Container(
+                    // color: Colors.blue,
+                    padding: EdgeInsets.all(10.0),
+                    child: Material(
+                      color: AppColors.accent_color,
+                      child: Center(
+                          child:Text(item.text)
+                      ),
+                    ),
+                  );
+                }else if(item is PhotoItem){
+                  return Container(
+                    //color: Colors.blue,
+                    width: 85.0,
+                    padding: EdgeInsets.all(10.0),
+                    child: Material(
+                      elevation: 4.0,
+                      child: Center(
+                          child:Text(item.textimage)
+                      ),
+                    ),
+                  );
+                }
               }
-            }else if(item is InfoItem) {
-              return new Container(
-                // color: Colors.blue,
-                padding: const EdgeInsets.all(10.0),
-                child: Material(
-                  color: AppColors.accent_color,
-                  child: Center(
-                      child:Text(item.text)
-                  ),
-                ),
-              );
-            }else if(item is PhotoItem){
-              return new Container(
-                //color: Colors.blue,
-                width: 85.0,
-                padding: const EdgeInsets.all(10.0),
-                child: Material(
-                  elevation: 4.0,
-                  child: Center(
-                      child:Text(item.textimage)
-                  ),
-                ),
-              );
-            }
-          }
-      ),
+          ),
+        ),
+        Container(
+          //height: double.negativeInfinity,
+          color: Colors.red,
+        )
+        //Image.asset(
+          //  'assets/images/plant.png',
+          //color: Colors.red,
+        //)
+      ],
+    );
+  }
+
+  Column getButtonColumn(IconData icon, String text){
+    return Column(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: <Widget>[
+          Icon(icon),
+          Text(text),
+        ]
     );
   }
 

@@ -71,5 +71,5 @@ class _HomeState extends State<Home>{
       _currentIndex = index;
     });
   }
-  
+
 }
