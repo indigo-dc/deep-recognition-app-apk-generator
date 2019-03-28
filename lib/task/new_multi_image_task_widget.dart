@@ -119,10 +119,14 @@ class NewMultiImageTaskPlaceholderState extends State<NewMultiImageTaskPlacehold
               });
             }
           },
-          child: Image.asset(
-              item.path,
-            fit: BoxFit.fill,
-          )
+          child: Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                  image: AssetImage(item.path),
+                  fit: BoxFit.cover
+              ),
+            ),
+          ),
         ),
         GestureDetector(
             onTap: () {
