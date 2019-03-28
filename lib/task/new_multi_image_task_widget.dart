@@ -3,6 +3,7 @@ import 'package:deep_app/utils/constants.dart';
 import 'package:deep_app/task/list_item.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'package:dio/dio.dart';
 
 class NewMultiImageTaskPlaceholderWidget extends StatefulWidget {
 
@@ -16,6 +17,8 @@ class NewMultiImageTaskPlaceholderWidget extends StatefulWidget {
 
   String image_preview_path = AppStrings.preview_default_img_path;
 
+  bool start_task_visibility = false;
+
   @override
   State<StatefulWidget> createState() {
     return NewMultiImageTaskPlaceholderState();
@@ -26,8 +29,35 @@ class NewMultiImageTaskPlaceholderState extends State<NewMultiImageTaskPlacehold
 
   @override
   Widget build(BuildContext context) {
+
+    if(widget.items.length > 2){
+      if(widget.items[2] is PhotoItem){
+        widget.start_task_visibility = true;
+      }else{
+        widget.start_task_visibility = false;
+      }
+    }
+
     return Column(
       children: <Widget>[
+        AppBar(
+          backgroundColor: AppColors.primary_color,
+          title: Text(AppStrings.app_label),
+          actions: <Widget>[
+            Visibility(
+              visible: widget.start_task_visibility,
+              child: IconButton(
+                onPressed: (
+                    onStartTaskPressed
+                ),
+                  icon: Icon(
+                    Icons.play_arrow,
+                    size: 35.0,
+                  )
+              ),
+            )
+          ],
+        ),
           Container(
           height: 85.0,
           width: double.infinity,
@@ -168,6 +198,20 @@ class NewMultiImageTaskPlaceholderState extends State<NewMultiImageTaskPlacehold
             )
         )
     );
+  }
+
+  onStartTaskPressed() async {
+    List <UploadFileInfo> pitems = [];
+    for(ListItem li in widget.items){
+      if(li is PhotoItem){
+        pitems.add(UploadFileInfo(File(li.path), li.path));
+      }
+    }
+    FormData formData = new FormData.from({
+      "data": pitems
+    });
+    Response response = await Dio().post(AppStrings.api_url + AppStrings.post_endpoint, data: formData);
+    print(response.toString());
   }
 
   @override

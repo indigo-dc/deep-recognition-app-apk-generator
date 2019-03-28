@@ -15,6 +15,8 @@ class _HomeState extends State<Home>{
   int _currentIndex = 0;
   List<Widget> _children;
 
+
+
   @override
   void initState() {
     _children = [
@@ -29,10 +31,10 @@ class _HomeState extends State<Home>{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: AppColors.primary_color,
-        title: Text(AppStrings.app_label),
-      ),
+      //appBar: AppBar(
+        //backgroundColor: AppColors.primary_color,
+        //title: Text(AppStrings.app_label),
+      //),
       body: _children[_currentIndex],
       bottomNavigationBar: new Theme(
         data: Theme.of(context).copyWith(

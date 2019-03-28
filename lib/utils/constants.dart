@@ -9,6 +9,8 @@ class AppStrings {
   static String camera = "CAMERA";
   static String file = "FILE";
   static String select_photo_info = "Select at least one photo";
+  static String api_url = "http://ribes-230.man.poznan.pl:443/";
+  static String post_endpoint = "models/plant_classification/predict";
 }
 
 class AppColors {

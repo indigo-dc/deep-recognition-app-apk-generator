@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:deep_app/utils/constants.dart';
 
 class HistoryPlaceholderWidget extends StatelessWidget {
   final Color color;
@@ -7,8 +8,13 @@ class HistoryPlaceholderWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: color,
+    return Column(
+      children: <Widget>[
+        AppBar(
+          backgroundColor: AppColors.primary_color,
+          title: Text(AppStrings.app_label),
+        )
+      ],
     );
   }
 }
