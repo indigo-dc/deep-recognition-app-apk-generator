@@ -19,13 +19,28 @@ class NewMultiImageTaskPlaceholderWidget extends StatefulWidget {
 
   bool start_task_visibility = false;
 
+
+
   @override
   State<StatefulWidget> createState() {
     return NewMultiImageTaskPlaceholderState();
   }
+
 }
 
-class NewMultiImageTaskPlaceholderState extends State<NewMultiImageTaskPlaceholderWidget> with AutomaticKeepAliveClientMixin{
+class NewMultiImageTaskPlaceholderState extends State<NewMultiImageTaskPlaceholderWidget> with AutomaticKeepAliveClientMixin,TickerProviderStateMixin{
+  AnimationController controller;
+  Animation<Offset> offset;
+
+  @override
+  void initState() {
+    super.initState();
+
+    controller = AnimationController( vsync: this, duration: Duration(seconds: 3));
+
+    offset = Tween<Offset>(begin: Offset.infinite, end: Offset(0.0, 1.0))
+        .animate(controller);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -192,15 +207,51 @@ class NewMultiImageTaskPlaceholderState extends State<NewMultiImageTaskPlacehold
   
   Expanded getPreviewImageExpanded(String path){
     return Expanded(
-        child: Container(
-            child: Image.asset(
-                path
-            )
-        )
+      child: Stack(
+        children: <Widget>[
+          Align(
+            alignment: Alignment.center,
+            child: Image.asset(path),
+          ),
+          Align(
+            alignment: Alignment.topCenter,
+              child: SlideTransition(
+                  position: offset,
+                child:  Container(
+                  padding: EdgeInsets.all(15.0),
+                  width: double.infinity,
+                  color: AppColors.notification_color,
+                  child: Text("Please wait..."),
+                ),
+              ),
+          )
+        ],
+      ),
     );
+
+    /*
+    return Expanded(
+      child: Stack(
+        children: <Widget>[
+          Align(
+            alignment: Alignment.topCenter,
+            child: SlideTransition(
+                position: offset,
+              child: Text("Please wait"),
+            ),
+          ),
+          Container(
+            child: Image.asset(
+              path
+            )
+          ),
+        ],
+      )
+    );*/
   }
 
   onStartTaskPressed() async {
+    /*f.show(context);
     List <UploadFileInfo> pitems = [];
     for(ListItem li in widget.items){
       if(li is PhotoItem){
@@ -211,11 +262,11 @@ class NewMultiImageTaskPlaceholderState extends State<NewMultiImageTaskPlacehold
       "data": pitems
     });
     Response response = await Dio().post(AppStrings.api_url + AppStrings.post_endpoint, data: formData);
-    print(response.toString());
+    print(response.toString());*/
+    controller.forward();
   }
 
   @override
   // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
-
 }
