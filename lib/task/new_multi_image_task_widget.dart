@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:dio/dio.dart';
 
+
 class NewMultiImageTaskPlaceholderWidget extends StatefulWidget {
 
   List <ListItem> items = [
@@ -18,6 +19,8 @@ class NewMultiImageTaskPlaceholderWidget extends StatefulWidget {
   String image_preview_path = AppStrings.preview_default_img_path;
 
   bool start_task_visibility = false;
+
+  bool pickImageScreen = true;
 
 
 
@@ -36,9 +39,9 @@ class NewMultiImageTaskPlaceholderState extends State<NewMultiImageTaskPlacehold
   void initState() {
     super.initState();
 
-    controller = AnimationController( vsync: this, duration: Duration(seconds: 3));
+    controller = AnimationController( vsync: this, duration: Duration(milliseconds: 300));
 
-    offset = Tween<Offset>(begin: Offset.infinite, end: Offset(0.0, 1.0))
+    offset = Tween<Offset>(begin: Offset(0.0, 0.0), end: Offset.zero)
         .animate(controller);
   }
 
@@ -53,6 +56,46 @@ class NewMultiImageTaskPlaceholderState extends State<NewMultiImageTaskPlacehold
       }
     }
 
+    if(widget.pickImageScreen){
+      return getPickColumn();
+    }else{
+      return getResultForum();
+    }
+
+
+
+  }
+
+  Column getResultForum(){
+    return Column(
+      children: <Widget>[
+        AppBar(
+          backgroundColor: AppColors.primary_color,
+          title: Text(AppStrings.app_label),
+        ),
+        Expanded(
+          child: Column(
+            children: <Widget>[
+              Expanded(
+                flex: 5,
+                child: Container(
+                  color: Colors.green,
+                ),
+              ),
+              Expanded(
+                flex: 5,
+                child: Container(
+                    color: Colors.red
+                ),
+              )
+            ],
+          )
+        )
+      ]
+    );
+  }
+
+  Column getPickColumn(){
     return Column(
       children: <Widget>[
         AppBar(
@@ -62,9 +105,9 @@ class NewMultiImageTaskPlaceholderState extends State<NewMultiImageTaskPlacehold
             Visibility(
               visible: widget.start_task_visibility,
               child: IconButton(
-                onPressed: (
-                    onStartTaskPressed
-                ),
+                  onPressed: (
+                      onStartTaskPressed
+                  ),
                   icon: Icon(
                     Icons.play_arrow,
                     size: 35.0,
@@ -73,7 +116,7 @@ class NewMultiImageTaskPlaceholderState extends State<NewMultiImageTaskPlacehold
             )
           ],
         ),
-          Container(
+        Container(
           height: 85.0,
           width: double.infinity,
           color: AppColors.accent_color,
@@ -88,41 +131,41 @@ class NewMultiImageTaskPlaceholderState extends State<NewMultiImageTaskPlacehold
                 if(item is ButtonItem) {
                   if(item.text == AppStrings.camera){
                     return RaisedButton(
-                      elevation: 0.0,
-                      padding: EdgeInsets.all(10.0),
-                      color: AppColors.accent_color,
-                      onPressed: () async {
-                        File img = await ImagePicker.pickImage(source: ImageSource.camera);
-                        if(img.path.isNotEmpty && widget.items.length >= 3){
-                          if(widget.items[2] is InfoItem){
-                            widget.items.removeLast();
+                        elevation: 0.0,
+                        padding: EdgeInsets.all(10.0),
+                        color: AppColors.accent_color,
+                        onPressed: () async {
+                          File img = await ImagePicker.pickImage(source: ImageSource.camera);
+                          if(img.path.isNotEmpty && widget.items.length >= 3){
+                            if(widget.items[2] is InfoItem){
+                              widget.items.removeLast();
+                            }
+                            setState(() {
+                              widget.image_preview_path = img.path;
+                              widget.items.add(PhotoItem(3, img.path));
+                            });
                           }
-                          setState(() {
-                            widget.image_preview_path = img.path;
-                            widget.items.add(PhotoItem(3, img.path));
-                          });
-                        }
-                      },
-                      child: getButtonColumn(Icons.photo_camera, item.text)
+                        },
+                        child: getButtonColumn(Icons.photo_camera, item.text)
                     );
                   }else if(item.text == AppStrings.file){
                     return RaisedButton(
-                      elevation: 0.0,
-                      padding: EdgeInsets.all(10.0),
-                      color: AppColors.accent_color,
-                      onPressed: () async{
-                        File img = await ImagePicker.pickImage(source: ImageSource.gallery);
-                        if(img.path.isNotEmpty && widget.items.length >= 3){
-                          if(widget.items[2] is InfoItem){
-                            widget.items.removeLast();
+                        elevation: 0.0,
+                        padding: EdgeInsets.all(10.0),
+                        color: AppColors.accent_color,
+                        onPressed: () async{
+                          File img = await ImagePicker.pickImage(source: ImageSource.gallery);
+                          if(img.path.isNotEmpty && widget.items.length >= 3){
+                            if(widget.items[2] is InfoItem){
+                              widget.items.removeLast();
+                            }
+                            setState(() {
+                              widget.image_preview_path = img.path;
+                              widget.items.add(PhotoItem(3, img.path));
+                            });
                           }
-                          setState(() {
-                            widget.image_preview_path = img.path;
-                            widget.items.add(PhotoItem(3, img.path));
-                          });
-                        }
-                      },
-                      child: getButtonColumn(Icons.file_upload, item.text)
+                        },
+                        child: getButtonColumn(Icons.file_upload, item.text)
                     );
                   }
                 }else if(item is InfoItem) {
@@ -140,8 +183,8 @@ class NewMultiImageTaskPlaceholderState extends State<NewMultiImageTaskPlacehold
                     width: 85.0,
                     padding: EdgeInsets.all(5.0),
                     child: Material(
-                      elevation: 4.0,
-                      child: getImageStack(item)
+                        elevation: 4.0,
+                        child: getImageStack(item)
                     ),
                   );
                 }
@@ -215,43 +258,27 @@ class NewMultiImageTaskPlaceholderState extends State<NewMultiImageTaskPlacehold
           ),
           Align(
             alignment: Alignment.topCenter,
-              child: SlideTransition(
-                  position: offset,
-                child:  Container(
-                  padding: EdgeInsets.all(15.0),
-                  width: double.infinity,
-                  color: AppColors.notification_color,
-                  child: Text("Please wait..."),
-                ),
-              ),
+              child: FadeTransition(
+                  child: SlideTransition(
+                    position: offset,
+                    child:  Container(
+                      padding: EdgeInsets.all(15.0),
+                      width: double.infinity,
+                      color: AppColors.notification_color,
+                      child: Text(
+                          "Please wait...",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                  opacity: controller),
           )
         ],
       ),
     );
-
-    /*
-    return Expanded(
-      child: Stack(
-        children: <Widget>[
-          Align(
-            alignment: Alignment.topCenter,
-            child: SlideTransition(
-                position: offset,
-              child: Text("Please wait"),
-            ),
-          ),
-          Container(
-            child: Image.asset(
-              path
-            )
-          ),
-        ],
-      )
-    );*/
   }
 
   onStartTaskPressed() async {
-    /*f.show(context);
     List <UploadFileInfo> pitems = [];
     for(ListItem li in widget.items){
       if(li is PhotoItem){
@@ -261,9 +288,13 @@ class NewMultiImageTaskPlaceholderState extends State<NewMultiImageTaskPlacehold
     FormData formData = new FormData.from({
       "data": pitems
     });
-    Response response = await Dio().post(AppStrings.api_url + AppStrings.post_endpoint, data: formData);
-    print(response.toString());*/
     controller.forward();
+    Response response = await Dio().post(AppStrings.api_url + AppStrings.post_endpoint, data: formData);
+    print(response.toString());
+
+    setState(() {
+      widget.pickImageScreen = false;
+    });
   }
 
   @override
