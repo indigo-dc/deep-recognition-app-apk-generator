@@ -4,6 +4,7 @@ import 'package:deep_app/task/list_item.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:dots_indicator/dots_indicator.dart';
 
 
 class NewMultiImageTaskPlaceholderWidget extends StatefulWidget {
@@ -34,6 +35,8 @@ class NewMultiImageTaskPlaceholderWidget extends StatefulWidget {
 class NewMultiImageTaskPlaceholderState extends State<NewMultiImageTaskPlaceholderWidget> with AutomaticKeepAliveClientMixin,TickerProviderStateMixin{
   AnimationController controller;
   Animation<Offset> offset;
+  List<Widget> images;
+  int photoNum = 0;
 
   @override
   void initState() {
@@ -63,29 +66,66 @@ class NewMultiImageTaskPlaceholderState extends State<NewMultiImageTaskPlacehold
     }
 
 
-
   }
 
   Column getResultForum(){
+
+    images = getPhotos(widget.items);
+
     return Column(
       children: <Widget>[
         AppBar(
           backgroundColor: AppColors.primary_color,
           title: Text(AppStrings.app_label),
+          actions: <Widget>[
+            Visibility(
+              visible: widget.start_task_visibility,
+              child: IconButton(
+                  icon: Icon(
+                    Icons.delete,
+                    size: 25.0,
+                    color: Colors.white,
+                  )
+              ),
+            )
+          ],
         ),
         Expanded(
           child: Column(
             children: <Widget>[
               Expanded(
                 flex: 5,
-                child: Container(
-                  color: Colors.green,
+                child: Stack(
+                  children: <Widget>[
+                    Container(
+                      child: PageView.builder(
+                        itemBuilder: (BuildContext context, int index) {
+                        photoNum = index;
+                        return images[index];
+                      },
+                        itemCount: images.length,
+                      ),
+                    ),
+                    Positioned(
+                      bottom: 0.0,
+                      left: 0.0,
+                      right: 0.0,
+                      child: new Center(
+                        child: Container(
+                          child: DotsIndicator(
+                            numberOfDot: images.length,
+                            position: photoNum,
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
                 ),
               ),
               Expanded(
                 flex: 5,
                 child: Container(
-                    color: Colors.red
+
                 ),
               )
             ],
@@ -295,6 +335,16 @@ class NewMultiImageTaskPlaceholderState extends State<NewMultiImageTaskPlacehold
     setState(() {
       widget.pickImageScreen = false;
     });
+  }
+
+  List<Widget> getPhotos(List <ListItem> items){
+    List<Widget> images  = [];
+    for(ListItem li in items){
+      if(li is PhotoItem){
+        images.add(Image.asset(li.path));
+      }
+    }
+    return images;
   }
 
   @override
