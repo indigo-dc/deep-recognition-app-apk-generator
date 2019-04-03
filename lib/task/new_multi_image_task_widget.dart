@@ -4,7 +4,8 @@ import 'package:deep_app/task/list_item.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:dio/dio.dart';
-import 'package:dots_indicator/dots_indicator.dart';
+import 'package:deep_app/task/task.dart';
+import 'package:page_indicator/page_indicator.dart';
 
 
 class NewMultiImageTaskPlaceholderWidget extends StatefulWidget {
@@ -37,6 +38,7 @@ class NewMultiImageTaskPlaceholderState extends State<NewMultiImageTaskPlacehold
   Animation<Offset> offset;
   List<Widget> images;
   int photoNum = 0;
+  Task task;
 
   @override
   void initState() {
@@ -70,7 +72,7 @@ class NewMultiImageTaskPlaceholderState extends State<NewMultiImageTaskPlacehold
 
   Column getResultForum(){
 
-    images = getPhotos(widget.items);
+    images = getPhotosWidgetList(widget.items);
 
     return Column(
       children: <Widget>[
@@ -97,6 +99,20 @@ class NewMultiImageTaskPlaceholderState extends State<NewMultiImageTaskPlacehold
                 flex: 5,
                 child: Stack(
                   children: <Widget>[
+                    PageIndicatorContainer(
+                      pageView: PageView(
+                        children: images,
+                      ),
+                      align: IndicatorAlign.bottom,
+                      length: images.length,
+                      padding: EdgeInsets.only(bottom: 10.0),
+                      size: 10.0,
+                      indicatorSpace: 10.0,
+                      indicatorSelectorColor: Colors.white,
+                      indicatorColor: Colors.grey,
+                    )
+
+                    /*
                     Container(
                       child: PageView.builder(
                         itemBuilder: (BuildContext context, int index) {
@@ -118,7 +134,7 @@ class NewMultiImageTaskPlaceholderState extends State<NewMultiImageTaskPlacehold
                           ),
                         ),
                       ),
-                    )
+                    )*/
                   ],
                 ),
               ),
@@ -334,10 +350,11 @@ class NewMultiImageTaskPlaceholderState extends State<NewMultiImageTaskPlacehold
 
     setState(() {
       widget.pickImageScreen = false;
+
     });
   }
 
-  List<Widget> getPhotos(List <ListItem> items){
+  List<Widget> getPhotosWidgetList(List <ListItem> items){
     List<Widget> images  = [];
     for(ListItem li in items){
       if(li is PhotoItem){
