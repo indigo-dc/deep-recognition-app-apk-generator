@@ -17,6 +17,7 @@ class AppColors {
   static const Color primary_color = Color(0xFF35B4C5);
   static const Color accent_color = Color(0xFF3990DC);
   static const Color notification_color = Color(0xD3212121);
+  static const Color primary_dark_color = Color(0xFF007393);
 }
 
 class AppDimensions {

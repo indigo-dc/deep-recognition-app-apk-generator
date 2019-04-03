@@ -6,6 +6,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:deep_app/task/task.dart';
 import 'package:page_indicator/page_indicator.dart';
+import 'dart:convert';
 
 
 class NewMultiImageTaskPlaceholderWidget extends StatefulWidget {
@@ -24,7 +25,7 @@ class NewMultiImageTaskPlaceholderWidget extends StatefulWidget {
 
   bool pickImageScreen = true;
 
-
+  Task task;
 
   @override
   State<StatefulWidget> createState() {
@@ -38,7 +39,7 @@ class NewMultiImageTaskPlaceholderState extends State<NewMultiImageTaskPlacehold
   Animation<Offset> offset;
   List<Widget> images;
   int photoNum = 0;
-  Task task;
+
 
   @override
   void initState() {
@@ -64,13 +65,13 @@ class NewMultiImageTaskPlaceholderState extends State<NewMultiImageTaskPlacehold
     if(widget.pickImageScreen){
       return getPickColumn();
     }else{
-      return getResultForum();
+      return getResultForum(widget.task);
     }
 
 
   }
 
-  Column getResultForum(){
+  Column getResultForum(Task task){
 
     images = getPhotosWidgetList(widget.items);
 
@@ -111,37 +112,68 @@ class NewMultiImageTaskPlaceholderState extends State<NewMultiImageTaskPlacehold
                       indicatorSelectorColor: Colors.white,
                       indicatorColor: Colors.grey,
                     )
-
-                    /*
-                    Container(
-                      child: PageView.builder(
-                        itemBuilder: (BuildContext context, int index) {
-                        photoNum = index;
-                        return images[index];
-                      },
-                        itemCount: images.length,
-                      ),
-                    ),
-                    Positioned(
-                      bottom: 0.0,
-                      left: 0.0,
-                      right: 0.0,
-                      child: new Center(
-                        child: Container(
-                          child: DotsIndicator(
-                            numberOfDot: images.length,
-                            position: photoNum,
-                          ),
-                        ),
-                      ),
-                    )*/
                   ],
                 ),
               ),
               Expanded(
                 flex: 5,
                 child: Container(
+                  child: ListView.builder(
+                      padding: EdgeInsets.only(top: 0.0) ,
+                      itemCount: task.results.predictions.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        final item = task.results.predictions[index];
 
+                        if(index == 0){
+                          return Container(
+                            color: AppColors.primary_dark_color,
+                              child: Row(
+                                children: <Widget>[
+                                  Expanded(
+                                    flex: 2,
+                                    child: Container(),
+                                  ),
+                                  Expanded(
+                                    flex: 4,
+                                    child: Text(item.label),
+                                  ),
+                                  Expanded(
+                                      flex: 2,
+                                      child: Icon(Icons.info_outline)
+                                  ),
+                                  Expanded(
+                                    flex: 2,
+                                    child: Text(item.probability.toStringAsFixed(2) + "%"),
+                                  )
+                                ],
+                              )
+                          );
+                        }else{
+                          return Container(
+                            child: Row(
+                              children: <Widget>[
+                                Expanded(
+                                  flex: 2,
+                                  child: Container(),
+                                ),
+                                Expanded(
+                                  flex: 4,
+                                  child: Text(item.label),
+                                ),
+                                Expanded(
+                                    flex: 2,
+                                    child: Icon(Icons.info_outline)
+                                ),
+                                Expanded(
+                                  flex: 2,
+                                  child: Text(item.probability.toStringAsFixed(2) + "%"),
+                                )
+                              ],
+                            )
+                          );
+                        }
+                      }
+                  ),
                 ),
               )
             ],
@@ -336,9 +368,11 @@ class NewMultiImageTaskPlaceholderState extends State<NewMultiImageTaskPlacehold
 
   onStartTaskPressed() async {
     List <UploadFileInfo> pitems = [];
+    List <String> photoPaths = [];
     for(ListItem li in widget.items){
       if(li is PhotoItem){
         pitems.add(UploadFileInfo(File(li.path), li.path));
+        photoPaths.add(li.path);
       }
     }
     FormData formData = new FormData.from({
@@ -346,11 +380,17 @@ class NewMultiImageTaskPlaceholderState extends State<NewMultiImageTaskPlacehold
     });
     controller.forward();
     Response response = await Dio().post(AppStrings.api_url + AppStrings.post_endpoint, data: formData);
-    print(response.toString());
+    print(response.statusCode);
+
+    final parsed = json.decode(response.toString());
+
+    Results results = new Results.fromJson(parsed);
+
+    print(results.predictions[0].label.toString());
 
     setState(() {
+      widget.task = Task(1,photoPaths, results);
       widget.pickImageScreen = false;
-
     });
   }
 
