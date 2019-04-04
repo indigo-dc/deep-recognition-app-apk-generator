@@ -7,6 +7,7 @@ import 'package:dio/dio.dart';
 import 'package:deep_app/task/task.dart';
 import 'package:page_indicator/page_indicator.dart';
 import 'dart:convert';
+import 'package:deep_app/task/results_page_widget.dart';
 
 
 class NewMultiImageTaskPlaceholderWidget extends StatefulWidget {
@@ -18,6 +19,7 @@ class NewMultiImageTaskPlaceholderWidget extends StatefulWidget {
     //PhotoItem(3, "test"),
     //PhotoItem(4, "test")
   ];
+
 
   String image_preview_path = AppStrings.preview_default_img_path;
 
@@ -37,9 +39,6 @@ class NewMultiImageTaskPlaceholderWidget extends StatefulWidget {
 class NewMultiImageTaskPlaceholderState extends State<NewMultiImageTaskPlaceholderWidget> with AutomaticKeepAliveClientMixin,TickerProviderStateMixin{
   AnimationController controller;
   Animation<Offset> offset;
-  List<Widget> images;
-  int photoNum = 0;
-
 
   @override
   void initState() {
@@ -65,15 +64,11 @@ class NewMultiImageTaskPlaceholderState extends State<NewMultiImageTaskPlacehold
     if(widget.pickImageScreen){
       return getPickColumn();
     }else{
-      return getResultForum(widget.task);
+      return getResultPageColumn(widget.task);
     }
-
-
   }
 
-  Column getResultForum(Task task){
-
-    images = getPhotosWidgetList(widget.items);
+  Column getResultPageColumn(Task task){
 
     return Column(
       children: <Widget>[
@@ -81,104 +76,34 @@ class NewMultiImageTaskPlaceholderState extends State<NewMultiImageTaskPlacehold
           backgroundColor: AppColors.primary_color,
           title: Text(AppStrings.app_label),
           actions: <Widget>[
-            Visibility(
-              visible: widget.start_task_visibility,
-              child: IconButton(
+              IconButton(
+                onPressed: () {
+                  showDialog(
+                      context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        content: Text(AppStrings.delete_alert_content),
+                        actions: <Widget>[
+                          FlatButton(
+                            child: Text("Yes"),
+                          ),
+                          FlatButton(
+                            child: Text("No")
+                          )
+                        ],
+                      );
+                    }
+                  );
+                },
                   icon: Icon(
                     Icons.delete,
                     size: 25.0,
                     color: Colors.white,
                   )
               ),
-            )
           ],
         ),
-        Expanded(
-          child: Column(
-            children: <Widget>[
-              Expanded(
-                flex: 5,
-                child: Stack(
-                  children: <Widget>[
-                    PageIndicatorContainer(
-                      pageView: PageView(
-                        children: images,
-                      ),
-                      align: IndicatorAlign.bottom,
-                      length: images.length,
-                      padding: EdgeInsets.only(bottom: 10.0),
-                      size: 10.0,
-                      indicatorSpace: 10.0,
-                      indicatorSelectorColor: Colors.white,
-                      indicatorColor: Colors.grey,
-                    )
-                  ],
-                ),
-              ),
-              Expanded(
-                flex: 5,
-                child: Container(
-                  child: ListView.builder(
-                      padding: EdgeInsets.only(top: 0.0) ,
-                      itemCount: task.results.predictions.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        final item = task.results.predictions[index];
-
-                        if(index == 0){
-                          return Container(
-                            color: AppColors.primary_dark_color,
-                              child: Row(
-                                children: <Widget>[
-                                  Expanded(
-                                    flex: 2,
-                                    child: Container(),
-                                  ),
-                                  Expanded(
-                                    flex: 4,
-                                    child: Text(item.label),
-                                  ),
-                                  Expanded(
-                                      flex: 2,
-                                      child: Icon(Icons.info_outline)
-                                  ),
-                                  Expanded(
-                                    flex: 2,
-                                    child: Text(item.probability.toStringAsFixed(2) + "%"),
-                                  )
-                                ],
-                              )
-                          );
-                        }else{
-                          return Container(
-                            child: Row(
-                              children: <Widget>[
-                                Expanded(
-                                  flex: 2,
-                                  child: Container(),
-                                ),
-                                Expanded(
-                                  flex: 4,
-                                  child: Text(item.label),
-                                ),
-                                Expanded(
-                                    flex: 2,
-                                    child: Icon(Icons.info_outline)
-                                ),
-                                Expanded(
-                                  flex: 2,
-                                  child: Text(item.probability.toStringAsFixed(2) + "%"),
-                                )
-                              ],
-                            )
-                          );
-                        }
-                      }
-                  ),
-                ),
-              )
-            ],
-          )
-        )
+        ResultsPageWidget(task)
       ]
     );
   }
@@ -378,30 +303,23 @@ class NewMultiImageTaskPlaceholderState extends State<NewMultiImageTaskPlacehold
     FormData formData = new FormData.from({
       "data": pitems
     });
+
     controller.forward();
+
     Response response = await Dio().post(AppStrings.api_url + AppStrings.post_endpoint, data: formData);
     print(response.statusCode);
 
-    final parsed = json.decode(response.toString());
 
-    Results results = new Results.fromJson(parsed);
+    if(response.statusCode == 200){
+      final parsed = json.decode(response.toString());
 
-    print(results.predictions[0].label.toString());
+      Results results = new Results.fromJson(parsed);
 
-    setState(() {
-      widget.task = Task(1,photoPaths, results);
-      widget.pickImageScreen = false;
-    });
-  }
-
-  List<Widget> getPhotosWidgetList(List <ListItem> items){
-    List<Widget> images  = [];
-    for(ListItem li in items){
-      if(li is PhotoItem){
-        images.add(Image.asset(li.path));
-      }
+      setState(() {
+        widget.task = Task(1,photoPaths, results);
+        widget.pickImageScreen = false;
+      });
     }
-    return images;
   }
 
   @override

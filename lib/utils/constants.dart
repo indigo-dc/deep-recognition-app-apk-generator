@@ -11,6 +11,7 @@ class AppStrings {
   static String select_photo_info = "Select at least one photo";
   static String api_url = "http://ribes-230.man.poznan.pl:443/";
   static String post_endpoint = "models/plant_classification/predict";
+  static String delete_alert_content = "The image will be deleted. Are you sure?";
 }
 
 class AppColors {
@@ -21,5 +22,5 @@ class AppColors {
 }
 
 class AppDimensions {
-
+  static const double task_result_row_size = 18.0;
 }
