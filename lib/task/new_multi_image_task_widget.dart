@@ -5,7 +5,6 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:deep_app/task/task.dart';
-import 'package:page_indicator/page_indicator.dart';
 import 'dart:convert';
 import 'package:deep_app/task/results_page_widget.dart';
 
@@ -85,10 +84,35 @@ class NewMultiImageTaskPlaceholderState extends State<NewMultiImageTaskPlacehold
                         content: Text(AppStrings.delete_alert_content),
                         actions: <Widget>[
                           FlatButton(
-                            child: Text("Yes"),
+                            child: Text(AppStrings.yes),
+                            onPressed: () {
+                              setState(() {
+                                widget.pickImageScreen = true;
+                                widget.start_task_visibility = false;
+                                widget.items = [
+                                  ButtonItem(0, AppStrings.camera, 35),
+                                  ButtonItem(1, AppStrings.file, 35),
+                                  InfoItem(2, AppStrings.select_photo_info),
+                                  //PhotoItem(3, "test"),
+                                  //PhotoItem(4, "test")
+                                ];
+
+                                controller = AnimationController( vsync: this, duration: Duration(milliseconds: 300));
+
+                                offset = Tween<Offset>(begin: Offset(0.0, 0.0), end: Offset.zero)
+                                    .animate(controller);
+
+                                widget.image_preview_path = AppStrings.preview_default_img_path;
+
+                              });
+                              Navigator.pop(context);
+                            }
                           ),
                           FlatButton(
-                            child: Text("No")
+                            child: Text(AppStrings.no),
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
                           )
                         ],
                       );

@@ -12,6 +12,8 @@ class AppStrings {
   static String api_url = "http://ribes-230.man.poznan.pl:443/";
   static String post_endpoint = "models/plant_classification/predict";
   static String delete_alert_content = "The image will be deleted. Are you sure?";
+  static String no = "NO";
+  static String yes = "YES";
 }
 
 class AppColors {
