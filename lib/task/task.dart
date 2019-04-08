@@ -1,9 +1,12 @@
+
 class Task{
   final int id;
   final List<String> images_paths;
   final Results results;
 
   Task(this.id, this.images_paths, this.results);
+
+  Map toJson() => {"id": id, "images_paths": images_paths, "results" : results};
 }
 
 class Results{
@@ -21,6 +24,8 @@ class Results{
       predictions: predictions
     );
   }
+
+  Map toJson() => {"status": status, "predictions": predictions};
 }
 
 class Prediction{
@@ -39,6 +44,8 @@ class Prediction{
       label: json["label"]
     );
   }
+
+  Map toJson() => {"info": info, "label_id": label_id, "probability" : probability, "label" : label};
 }
 
 class Info{

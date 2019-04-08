@@ -7,6 +7,7 @@ import 'package:dio/dio.dart';
 import 'package:deep_app/task/task.dart';
 import 'dart:convert';
 import 'package:deep_app/task/results_page_widget.dart';
+import 'package:deep_app/utils/offline_storage.dart';
 
 
 class NewMultiImageTaskPlaceholderWidget extends StatefulWidget {
@@ -339,8 +340,13 @@ class NewMultiImageTaskPlaceholderState extends State<NewMultiImageTaskPlacehold
 
       Results results = new Results.fromJson(parsed);
 
+      Task task = Task(1,photoPaths, results);
+
+      List <Task> tasks = [task];
+      OfflineStorage.putList(tasks);
+
       setState(() {
-        widget.task = Task(1,photoPaths, results);
+        widget.task = task;
         widget.pickImageScreen = false;
       });
     }
