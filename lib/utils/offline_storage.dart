@@ -8,27 +8,43 @@ class OfflineStorage{
 
   String TAG = "OfflineStorage";
 
-   static putList(List<Task> tasks) async {
+   static putList(TasksList tasksList) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    TasksList tasksList = TasksList(tasks);
-    final myJsonStr = jsonEncode(tasksList);
-    print(myJsonStr);
+    //TasksList tasksList = TasksList(tasks: tasks);
+    final myJsonStr = jsonEncode(tasksList.toJson());
+    print("json encoded length: " + myJsonStr.length.toString());
+    print(tasksList.toJson());
+    await prefs.setString('tasks', myJsonStr);
   }
 
+  static Future<TasksList> getList() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final tasksJson = prefs.getString("tasks");
+    print("json decoded length: " + tasksJson.length.toString());
+    Map<String, dynamic> value = jsonDecode(tasksJson);
+    print(value);
+    TasksList tasksList = TasksList.fromJson(value);
+    print(tasksList);
+    return tasksList;
+  }
 }
 
 class TasksList{
   List<Task> tasks;
 
-  TasksList(this.tasks);
+  TasksList({this.tasks});
 
-  //Map toJson() => {"tasksList": tasks};
-
-  TasksList.fromJson(Map<String, dynamic> json)
-      : tasks = json['name'];
+  factory TasksList.fromJson(Map<String, dynamic> json) {
+    var list = json["tasks"] as List;
+    List<Task> tasks = list.map((i) =>
+        Task.fromJson(i)).toList();
+    return TasksList(
+        tasks: tasks
+    );
+  }
 
   Map<String, dynamic> toJson() =>
       {
-        "tasks": tasks
+        "tasks": tasks.map((t) => t.toJson()).toList()
       };
 }

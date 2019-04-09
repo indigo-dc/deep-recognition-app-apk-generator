@@ -7,15 +7,15 @@ import 'package:dio/dio.dart';
 import 'package:deep_app/task/task.dart';
 import 'dart:convert';
 import 'package:deep_app/task/results_page_widget.dart';
-import 'package:deep_app/utils/offline_storage.dart';
+import 'package:deep_app/history/history_repository.dart';
 
 
 class NewMultiImageTaskPlaceholderWidget extends StatefulWidget {
 
   List <ListItem> items = [
-    ButtonItem(0, AppStrings.camera, 35),
-    ButtonItem(1, AppStrings.file, 35),
-    InfoItem(2, AppStrings.select_photo_info),
+    ButtonItem(-3, AppStrings.camera, 35),
+    ButtonItem(-2, AppStrings.file, 35),
+    InfoItem(-1, AppStrings.select_photo_info),
     //PhotoItem(3, "test"),
     //PhotoItem(4, "test")
   ];
@@ -69,6 +69,7 @@ class NewMultiImageTaskPlaceholderState extends State<NewMultiImageTaskPlacehold
   }
 
   Column getResultPageColumn(Task task){
+    resetData();
 
     return Column(
       children: <Widget>[
@@ -88,23 +89,7 @@ class NewMultiImageTaskPlaceholderState extends State<NewMultiImageTaskPlacehold
                             child: Text(AppStrings.yes),
                             onPressed: () {
                               setState(() {
-                                widget.pickImageScreen = true;
-                                widget.start_task_visibility = false;
-                                widget.items = [
-                                  ButtonItem(0, AppStrings.camera, 35),
-                                  ButtonItem(1, AppStrings.file, 35),
-                                  InfoItem(2, AppStrings.select_photo_info),
-                                  //PhotoItem(3, "test"),
-                                  //PhotoItem(4, "test")
-                                ];
-
-                                controller = AnimationController( vsync: this, duration: Duration(milliseconds: 300));
-
-                                offset = Tween<Offset>(begin: Offset(0.0, 0.0), end: Offset.zero)
-                                    .animate(controller);
-
-                                widget.image_preview_path = AppStrings.preview_default_img_path;
-
+                                resetData();
                               });
                               Navigator.pop(context);
                             }
@@ -332,24 +317,39 @@ class NewMultiImageTaskPlaceholderState extends State<NewMultiImageTaskPlacehold
     controller.forward();
 
     Response response = await Dio().post(AppStrings.api_url + AppStrings.post_endpoint, data: formData);
-    print(response.statusCode);
-
 
     if(response.statusCode == 200){
       final parsed = json.decode(response.toString());
 
       Results results = new Results.fromJson(parsed);
 
-      Task task = Task(1,photoPaths, results);
-
-      List <Task> tasks = [task];
-      OfflineStorage.putList(tasks);
+      HistoryRepository hr = HistoryRepository();
+      final task = await hr.addTask(photoPaths, results);
 
       setState(() {
         widget.task = task;
         widget.pickImageScreen = false;
       });
     }
+  }
+
+  resetData(){
+    widget.pickImageScreen = true;
+    widget.start_task_visibility = false;
+    widget.items = [
+      ButtonItem(0, AppStrings.camera, 35),
+      ButtonItem(1, AppStrings.file, 35),
+      InfoItem(2, AppStrings.select_photo_info),
+      //PhotoItem(3, "test"),
+      //PhotoItem(4, "test")
+    ];
+
+    controller = AnimationController( vsync: this, duration: Duration(milliseconds: 300));
+
+    offset = Tween<Offset>(begin: Offset(0.0, 0.0), end: Offset.zero)
+        .animate(controller);
+
+    widget.image_preview_path = AppStrings.preview_default_img_path;
   }
 
   @override

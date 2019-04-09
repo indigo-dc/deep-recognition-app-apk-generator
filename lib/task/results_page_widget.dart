@@ -12,7 +12,7 @@ class ResultsPageWidget extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
 
-    var images = getImagesWidgetList(task.images_paths);
+    var images = getImagesWidgetList(task.image_paths);
 
     return Expanded(
         child: Column(

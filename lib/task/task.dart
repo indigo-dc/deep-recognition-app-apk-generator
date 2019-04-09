@@ -1,12 +1,28 @@
 
 class Task{
   final int id;
-  final List<String> images_paths;
+  final List<String> image_paths;
   final Results results;
 
-  Task(this.id, this.images_paths, this.results);
+  Task({this.id, this.image_paths, this.results});
 
-  Map toJson() => {"id": id, "images_paths": images_paths, "results" : results};
+
+  factory Task.fromJson(Map<String, dynamic> json) {
+    var list = json['image_paths'];
+    List<String> image_paths = new List<String>.from(list);
+    return Task(
+      id: json["id"],
+      image_paths: image_paths,
+      results: Results.fromJson(json["results"])
+    );
+  }
+
+  Map<String, dynamic> toJson() =>
+      {
+        "id": id,
+        "image_paths": image_paths,
+        "results": results.toJson()
+      };
 }
 
 class Results{
@@ -25,7 +41,10 @@ class Results{
     );
   }
 
-  Map toJson() => {"status": status, "predictions": predictions};
+  Map<String, dynamic> toJson() =>
+      {
+        "status": status, "predictions": predictions.map((p) => p.toJson()).toList()
+      };
 }
 
 class Prediction{
@@ -45,7 +64,7 @@ class Prediction{
     );
   }
 
-  Map toJson() => {"info": info, "label_id": label_id, "probability" : probability, "label" : label};
+  Map toJson() => {"info": info.toJson(), "label_id": label_id, "probability" : probability, "label" : label};
 }
 
 class Info{
@@ -63,6 +82,12 @@ class Info{
       metadata: json["metadata"]
     );
   }
+
+  Map<String, dynamic> toJson() =>
+      {
+        "links": links.map((l) => l.toJson()).toList(), "metadata": metadata
+      };
+
 }
 
 class Link{
@@ -77,4 +102,10 @@ class Link{
       link: json["link"]
     );
   }
+
+  Map<String, dynamic> toJson() =>
+      {
+        "url": url, "link": link
+      };
+
 }
