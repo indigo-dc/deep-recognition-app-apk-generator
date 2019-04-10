@@ -8,6 +8,8 @@ import 'package:deep_app/task/task.dart';
 import 'dart:convert';
 import 'package:deep_app/task/results_page_widget.dart';
 import 'package:deep_app/history/history_repository.dart';
+import 'package:path_provider/path_provider.dart';
+
 
 
 class NewMultiImageTaskPlaceholderWidget extends StatefulWidget {
@@ -88,6 +90,7 @@ class NewMultiImageTaskPlaceholderState extends State<NewMultiImageTaskPlacehold
                           FlatButton(
                             child: Text(AppStrings.yes),
                             onPressed: () {
+                              deleteTaskFromRepository(widget.task.id);
                               setState(() {
                                 resetData();
                               });
@@ -159,13 +162,18 @@ class NewMultiImageTaskPlaceholderState extends State<NewMultiImageTaskPlacehold
                         color: AppColors.accent_color,
                         onPressed: () async {
                           File img = await ImagePicker.pickImage(source: ImageSource.camera);
-                          if(img.path.isNotEmpty && widget.items.length >= 3){
+                          final dir = await getApplicationDocumentsDirectory();
+                          final path = dir.path;
+                          final timestamp = DateTime.now().millisecondsSinceEpoch;
+                          final timestampString = timestamp.toString();
+                          File newImg = await img.copy("$path/$timestampString.jpg");
+                          if(newImg.path.isNotEmpty && widget.items.length >= 3){
                             if(widget.items[2] is InfoItem){
                               widget.items.removeLast();
                             }
                             setState(() {
-                              widget.image_preview_path = img.path;
-                              widget.items.add(PhotoItem(3, img.path));
+                              widget.image_preview_path = newImg.path;
+                              widget.items.add(PhotoItem(3, newImg.path));
                             });
                           }
                         },
@@ -350,6 +358,11 @@ class NewMultiImageTaskPlaceholderState extends State<NewMultiImageTaskPlacehold
         .animate(controller);
 
     widget.image_preview_path = AppStrings.preview_default_img_path;
+  }
+
+  deleteTaskFromRepository(int taskId){
+    HistoryRepository historyRepository = HistoryRepository();
+    historyRepository.removeTask(taskId);
   }
 
   @override

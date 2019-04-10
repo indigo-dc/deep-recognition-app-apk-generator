@@ -16,13 +16,12 @@ class _HomeState extends State<Home>{
   List<Widget> _children;
 
 
-
   @override
   void initState() {
     _children = [
       NewMultiImageTaskPlaceholderWidget(),
-      HistoryPlaceholderWidget(Colors.white),
-      CreditsPlaceholderWidget(Colors.white)
+      HistoryPlaceholderWidget(),
+      CreditsPlaceholderWidget()
     ];
 
     super.initState();
@@ -31,10 +30,6 @@ class _HomeState extends State<Home>{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //appBar: AppBar(
-        //backgroundColor: AppColors.primary_color,
-        //title: Text(AppStrings.app_label),
-      //),
       body: _children[_currentIndex],
       bottomNavigationBar: new Theme(
         data: Theme.of(context).copyWith(

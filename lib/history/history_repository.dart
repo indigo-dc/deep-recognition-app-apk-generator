@@ -3,8 +3,9 @@ import 'package:deep_app/utils/offline_storage.dart';
 
 class HistoryRepository{
 
-  getTasks() async {
-    return await OfflineStorage.getList();
+  Future<List<Task>> getTasks() async{
+    var taskslist = await OfflineStorage.getList();
+    return taskslist.tasks;
   }
 
   Future<Task> addTask(List <String> image_paths, Results results) async{

@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:deep_app/utils/constants.dart';
 
 class CreditsPlaceholderWidget extends StatelessWidget {
-  final Color color;
 
-  CreditsPlaceholderWidget(this.color);
+  CreditsPlaceholderWidget();
 
   @override
   Widget build(BuildContext context) {
