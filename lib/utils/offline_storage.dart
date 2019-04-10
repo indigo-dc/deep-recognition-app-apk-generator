@@ -20,12 +20,17 @@ class OfflineStorage{
   static Future<TasksList> getList() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final tasksJson = prefs.getString("tasks");
-    print("json decoded length: " + tasksJson.length.toString());
-    Map<String, dynamic> value = jsonDecode(tasksJson);
-    print(value);
-    TasksList tasksList = TasksList.fromJson(value);
-    print(tasksList);
-    return tasksList;
+    if(tasksJson != null){
+      print("json decoded length: " + tasksJson.length.toString());
+      Map<String, dynamic> value = jsonDecode(tasksJson);
+      print(value);
+      TasksList tasksList = TasksList.fromJson(value);
+      print(tasksList);
+      return tasksList;
+    }else{
+      print("json decoded length: empty");
+      return new TasksList(tasks: []);
+    }
   }
 }
 

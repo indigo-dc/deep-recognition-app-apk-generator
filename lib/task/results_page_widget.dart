@@ -98,7 +98,7 @@ class ResultsPageWidget extends StatelessWidget{
                                 ),
                               ),
                               Expanded(
-                                  flex: 15,
+                                  flex: 13,
                                   child:
                                   GestureDetector(
                                     onTap: () {
@@ -112,7 +112,7 @@ class ResultsPageWidget extends StatelessWidget{
                                   ),
                               ),
                               Expanded(
-                                flex: 18,
+                                flex: 20,
                                 child: Text(
                                   (item.probability * 100).toStringAsFixed(2) + " %",
                                   textAlign: TextAlign.right,
