@@ -1,6 +1,7 @@
 import 'package:deep_app/task/task.dart';
 import 'package:deep_app/utils/offline_storage.dart';
 
+
 class HistoryRepository{
 
   Future<List<Task>> getTasks() async{
@@ -28,6 +29,7 @@ class HistoryRepository{
     for(Task t in taskslist.tasks){
       if(t.id == id){
         taskslist.tasks.remove(t);
+        OfflineStorage.putList(taskslist);
         return true;
       }
     }
