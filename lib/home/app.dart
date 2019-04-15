@@ -15,6 +15,8 @@ class _HomeState extends State<Home>{
   int _currentIndex = 0;
   List<Widget> _children;
 
+  final navigatorKey = GlobalKey<NavigatorState>();
+
 
   @override
   void initState() {
@@ -63,10 +65,16 @@ class _HomeState extends State<Home>{
     );
   }
 
+  _buildOffstageNavigator(){
+
+  }
+
   void onTabTapped(int index) {
     setState(() {
       _currentIndex = index;
     });
   }
+
+
 
 }

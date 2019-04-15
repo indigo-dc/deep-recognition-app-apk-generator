@@ -26,6 +26,8 @@ class HistoryPlaceholderState extends State<HistoryPlaceholderWidget> with Autom
 
   bool resultsPage = false;
 
+
+
   @override
   void initState() {
     loadTasks().then((t){
@@ -116,10 +118,15 @@ class HistoryPlaceholderState extends State<HistoryPlaceholderWidget> with Autom
   }
 
   buildResultsWidget(Task task){
-    final iosAppBar = buildIOSAppBar();
+    var appBar;
+    if(Platform.isAndroid){
+      appBar = buildAndroidAppBar();
+    }else{
+      appBar = buildIOSAppBar();
+    }
     return Column(
         children: <Widget>[
-          iosAppBar,
+          appBar,
           ResultsPageWidget(task)
         ]
     );
@@ -172,6 +179,60 @@ class HistoryPlaceholderState extends State<HistoryPlaceholderWidget> with Autom
         ),
       ],
     );
+  }
+
+  Widget buildAndroidAppBar(){
+    return AppBar(
+      backgroundColor: AppColors.primary_color,
+      title: Text(AppStrings.app_label),
+      actions: <Widget>[
+        IconButton(
+            onPressed: () {
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      content: Text(AppStrings.delete_alert_content),
+                      actions: <Widget>[
+                        FlatButton(
+                            child: Text(AppStrings.yes),
+                            onPressed: () {
+                              deleteTaskFromRepository(widget.currentTask.id).then((d){
+                                return loadTasks();
+                              }).then((l){
+                                setState(() {
+                                  widget.tasks = l;
+                                  resultsPage = false;
+                                });
+                              });
+                              Navigator.pop(context);
+                            }
+                        ),
+                        FlatButton(
+                          child: Text(AppStrings.no),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                        )
+                      ],
+                    );
+                  }
+              );
+            },
+            icon: Icon(
+              Icons.delete,
+              size: 25.0,
+              color: Colors.white,
+            )
+        ),
+      ],
+    );
+  }
+
+  onBackPressed(){
+    setState(() {
+
+    });
   }
 
   Future<List<Task>> loadTasks() async{
