@@ -58,6 +58,7 @@ class BottomNavigation extends StatelessWidget {
       onTap: (index) => onSelectTab(
         TabHelper.item(index: index),
       ),
+      currentIndex: currentTab.index,
     );
   }
 
@@ -66,12 +67,13 @@ class BottomNavigation extends StatelessWidget {
     IconData icon = TabHelper.icon(tabItem);
     return BottomNavigationBarItem(
       icon: Icon(
-        icon
+        icon,
       ),
       title: Text(
         text
-      )
+      ),
     );
   }
+
 
 }
