@@ -44,9 +44,9 @@ class HistoryPlaceholderState extends State<HistoryPlaceholderWidget> with Autom
   @override
   Widget build(BuildContext context) {
     if (widget.tasks == null){
-      return Container();
-    }else{
-      if(resultsPage){
+        return Container();
+      }else{
+        if(resultsPage){
         return buildResultsWidget(widget.currentTask);
       }else{
         return buildGridWidget();

@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:deep_app/utils/constants.dart';
+import 'package:deep_app/task/task.dart';
 
 class ResultPage extends StatefulWidget {
-  ResultPage();
+  ResultPage({this.task});
+  final Task task;
 
   @override
   State<StatefulWidget> createState() {
-    // TODO: implement createState
     return ResultPageState();
   }
 

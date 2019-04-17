@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:deep_app/utils/constants.dart';
 
-class CreditsPlaceholderWidget extends StatelessWidget {
+class CreditsPage extends StatelessWidget {
 
-  CreditsPlaceholderWidget();
+  CreditsPage();
 
   @override
   Widget build(BuildContext context) {
