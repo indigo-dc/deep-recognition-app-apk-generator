@@ -6,7 +6,6 @@ import 'package:url_launcher/url_launcher.dart';
 
 class ResultsPageWidget extends StatelessWidget{
   final Task task;
-
   ResultsPageWidget(this.task);
 
   @override

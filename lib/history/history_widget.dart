@@ -26,7 +26,11 @@ class HistoryPlaceholderState extends State<HistoryPlaceholderWidget> with Autom
 
   bool resultsPage = false;
 
+  @override
+  void didUpdateWidget(HistoryPlaceholderWidget oldWidget) {
 
+    super.didUpdateWidget(oldWidget);
+  }
 
   @override
   void initState() {
@@ -236,14 +240,14 @@ class HistoryPlaceholderState extends State<HistoryPlaceholderWidget> with Autom
   }
 
   Future<List<Task>> loadTasks() async{
-    HistoryRepository historyRepository = HistoryRepository();
-    final tasks = await historyRepository.getTasks();
-    return tasks;
+    //HistoryRepository historyRepository = HistoryRepository();
+    //final tasks = await historyRepository.getTasks();
+    //return tasks;
   }
 
   Future<bool>deleteTaskFromRepository(int taskId) async{
-    HistoryRepository historyRepository = HistoryRepository();
-    return await historyRepository.removeTask(taskId);
+    //HistoryRepository historyRepository = HistoryRepository();
+    //return await historyRepository.removeTask(taskId);
   }
 
   @override

@@ -7,13 +7,13 @@ import 'package:deep_app/history/history_repository.dart';
 
 class HistoryPage extends StatefulWidget {
   HistoryPage({this.onPush});
-  final ValueChanged<int> onPush;
+  final ValueChanged<Task> onPush;
 
-  List<Task> tasks = [];
+  //List<Task> tasks = [];
 
   //bool resultsPage = false;
 
-  Task currentTask;
+  //Task currentTask;
 
   @override
   State<StatefulWidget> createState() {
@@ -22,21 +22,40 @@ class HistoryPage extends StatefulWidget {
 
 }
 
-class HistoryPageState extends State<HistoryPage>{
+class HistoryPageState extends State<HistoryPage> with AutomaticKeepAliveClientMixin{
+  List<Task> tasks = [];
+  Task currentTask;
 
   @override
-  void initState() {
+  void didUpdateWidget(HistoryPage oldWidget) {
+    if(Navigator.canPop(context)){
+      Navigator.pop(context);
+    }
     loadTasks().then((t){
       setState(() {
         print(t);
-        widget.tasks = t;
-        for(Task t in widget.tasks){
+        tasks = t;
+        for(Task t in tasks){
           precacheImage(FileImage(File(t.image_paths[0])),context);
         }
       });
     });
-    //super.initState();
+    super.didUpdateWidget(oldWidget);
   }
+
+  /*@override
+  void initState() {
+    loadTasks().then((t){
+      setState(() {
+        print(t);
+        tasks = t;
+        for(Task t in tasks){
+          precacheImage(FileImage(File(t.image_paths[0])),context);
+        }
+      });
+    });
+    super.initState();
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +72,7 @@ class HistoryPageState extends State<HistoryPage>{
             //padding: EdgeInsets.all(10.0),
             childAspectRatio: 1.5,
             padding: EdgeInsets.only(left: 10.0, top: 10.0, right: 10.0, bottom: 0.0),
-            children: buildGridTiles(widget.tasks)
+            children: buildGridTiles(tasks)
         ),
 
     );
@@ -64,11 +83,7 @@ class HistoryPageState extends State<HistoryPage>{
             (int index){
           return Container(
             child: GestureDetector(
-              onTap: () {
-                setState(() {
-                  widget.currentTask = tasks[index];
-                });
-              },
+              onTap: () => widget.onPush(tasks[index]),
               child: Stack(
                 children: <Widget>[
                   FadeInImage(
@@ -104,5 +119,9 @@ class HistoryPageState extends State<HistoryPage>{
     final tasks = await historyRepository.getTasks();
     return tasks;
   }
+
+  @override
+  // TODO: implement wantKeepAlive
+  bool get wantKeepAlive => false;
 
 }

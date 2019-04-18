@@ -17,7 +17,7 @@ class TabNavigator extends StatelessWidget {
   final GlobalKey<NavigatorState> navigatorKey;
   final TabItem tabItem;
 
-  void _push(BuildContext context, {Task task: null}) {
+  void _push(BuildContext context, {Task task}) {
     var routeBuilders = _routeBuilders(context, task: task);
 
     Navigator.push(
@@ -29,7 +29,7 @@ class TabNavigator extends StatelessWidget {
   }
 
   Map<String, WidgetBuilder> _routeBuilders(BuildContext context,
-      {Task task: null}) {
+      {Task task}) {
 
     final analysisMap = {
       TabNavigatorRoutes.root: (context) => AnalysisPage(
@@ -42,7 +42,7 @@ class TabNavigator extends StatelessWidget {
 
     final historyMap = {
       TabNavigatorRoutes.root: (context) => HistoryPage(
-        onPush: (materialIndex) => _push(context, task: task),
+        onPush: (task) => _push(context, task: task),
       ),
       TabNavigatorRoutes.results: (context) => ResultPage(
         task: task,
@@ -60,6 +60,8 @@ class TabNavigator extends StatelessWidget {
         return historyMap;
       case TabItem.credits:
         return creditsMap;
+      default:
+        return analysisMap;
     }
   }
 

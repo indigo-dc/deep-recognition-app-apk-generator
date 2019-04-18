@@ -43,6 +43,8 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
   AnimationController controller;
   Animation<Offset> offset;
 
+  String image_preview_path = AppStrings.preview_default_img_path;
+
   @override
   void initState() {
     //super.initState();
@@ -129,7 +131,7 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
                               widget.items.removeLast();
                             }
                             setState(() {
-                              widget.image_preview_path = newImg.path;
+                              image_preview_path = newImg.path;
                               widget.items.add(PhotoItem(3, newImg.path));
                               widget.start_task_visibility = true;
                             });
@@ -149,7 +151,7 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
                               widget.items.removeLast();
                             }
                             setState(() {
-                              widget.image_preview_path = img.path;
+                              image_preview_path = img.path;
                               widget.items.add(PhotoItem(3, img.path));
                               widget.start_task_visibility = true;
                             });
@@ -181,7 +183,7 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
               }
           ),
         ),
-        getPreviewImageExpanded(widget.image_preview_path)
+        getPreviewImageExpanded(image_preview_path)
       ],
     );
   }
@@ -232,9 +234,9 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
       children: <Widget>[
         GestureDetector(
           onTap: () {
-            if(widget.image_preview_path != item.path){
+            if(image_preview_path != item.path){
               setState(() {
-                widget.image_preview_path = item.path;
+                image_preview_path = item.path;
               });
             }
           },
@@ -253,9 +255,9 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
                 widget.items.remove(item);
                 final lastItem = widget.items.last;
                 if(lastItem is PhotoItem){
-                  widget.image_preview_path = lastItem.path;
+                  image_preview_path = lastItem.path;
                 }else{
-                  widget.image_preview_path = AppStrings.preview_default_img_path;
+                  image_preview_path = AppStrings.preview_default_img_path;
                   widget.items.add(InfoItem(1, AppStrings.select_photo_info));
                   widget.start_task_visibility = false;
                 }
@@ -295,6 +297,10 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
       HistoryRepository hr = HistoryRepository();
       final task = await hr.addTask(photoPaths, results);
 
+      controller.reset();
+
+      //TODO ResultPage show
+
       setState(() {
         widget.task = task;
         widget.pickImageScreen = false;
@@ -304,7 +310,5 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
 
   @override
   // TODO: implement wantKeepAlive
-  bool get wantKeepAlive => null;
-
-
+  bool get wantKeepAlive => false;
 }

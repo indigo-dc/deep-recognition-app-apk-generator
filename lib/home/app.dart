@@ -31,6 +31,7 @@ class _AppState extends State<App>{
   void _selectTab(TabItem tabItem){
     setState(() {
       currentTab = tabItem;
+      //_buildOffstageNavigator(tabItem);
     });
   }
 
@@ -76,6 +77,7 @@ class _AppState extends State<App>{
       !await navigatorKeys[currentTab].currentState.maybePop(),*/
       child: Scaffold(
         body: Stack(children: <Widget>[
+          //_buildOffstageNavigator(currentTab),
           _buildOffstageNavigator(TabItem.analysis),
           _buildOffstageNavigator(TabItem.history),
           _buildOffstageNavigator(TabItem.credits)
@@ -152,9 +154,6 @@ class _AppState extends State<App>{
   }
 
   Widget _buildOffstageNavigator(TabItem tabItem) {
-    Widget widget = new Container();
-
-
     return Offstage(
       offstage: currentTab != tabItem,
       child: TabNavigator(
