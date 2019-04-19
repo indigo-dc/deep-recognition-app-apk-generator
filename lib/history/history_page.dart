@@ -35,9 +35,9 @@ class HistoryPageState extends State<HistoryPage> with AutomaticKeepAliveClientM
       setState(() {
         print(t);
         tasks = t;
-        for(Task t in tasks){
+        /*for(Task t in tasks){
           precacheImage(FileImage(File(t.image_paths[0])),context);
-        }
+        }*/
       });
     });
     super.didUpdateWidget(oldWidget);

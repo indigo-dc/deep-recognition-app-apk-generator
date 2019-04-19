@@ -33,7 +33,7 @@ class TabNavigator extends StatelessWidget {
 
     final analysisMap = {
       TabNavigatorRoutes.root: (context) => AnalysisPage(
-        onPush: (materialIndex) => _push(context, task: task),
+        onPush: (task) => _push(context, task: task),
       ),
       TabNavigatorRoutes.results: (context) => ResultPage(
         task: task,
