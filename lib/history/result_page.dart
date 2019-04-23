@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:deep_app/utils/constants.dart';
 import 'package:deep_app/task/task.dart';
-import 'package:deep_app/task/results_page_widget.dart';
-import 'package:deep_app/task/task.dart';
-import 'package:flutter/material.dart';
-import 'package:deep_app/task/task.dart';
-import 'package:deep_app/utils/constants.dart';
 import 'package:page_indicator/page_indicator.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:deep_app/history/history_repository.dart';
 
 class ResultPage extends StatelessWidget {
   ResultPage({this.task});
@@ -22,6 +18,23 @@ class ResultPage extends StatelessWidget {
         appBar: AppBar(
           backgroundColor: AppColors.primary_color,
           title: Text(AppStrings.app_label),
+          actions: <Widget>[
+            IconButton(
+                onPressed: () {
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        showAlertDialog(context);
+                      }
+                  );
+                },
+                icon: Icon(
+                  Icons.delete,
+                  size: 25.0,
+                  color: Colors.white,
+                )
+            ),
+          ],
         ),
         body: Column(
               children: <Widget>[
@@ -153,12 +166,46 @@ class ResultPage extends StatelessWidget {
     return imagesWidgets;
   }
 
+  Widget showAlertDialog(BuildContext context){
+    return AlertDialog(
+      content: Text(AppStrings.delete_alert_content),
+      actions: <Widget>[
+        FlatButton(
+            child: Text(AppStrings.yes),
+            onPressed: () {
+              /*
+              _deleteTaskFromRepository(widget.currentTask.id).then((d){
+                return loadTasks();
+              }).then((l){
+                setState(() {
+                  widget.tasks = l;
+                  resultsPage = false;
+                });
+              });*/
+              Navigator.pop(context);
+            }
+        ),
+        FlatButton(
+          child: Text(AppStrings.no),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        )
+      ],
+    );
+  }
+
   _launchURL(url) async {
     if (await canLaunch(url)) {
       await launch(url);
     } else {
       throw 'Could not launch $url';
     }
+  }
+
+  Future<bool> _deleteTaskFromRepository(int taskId) async{
+    HistoryRepository historyRepository = HistoryRepository();
+    return await historyRepository.removeTask(taskId);
   }
 
 }
