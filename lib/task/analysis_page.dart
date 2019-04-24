@@ -295,7 +295,11 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
 
     controller.forward();
 
-    Response response = await Dio().post(AppStrings.api_url + AppStrings.post_endpoint, data: formData);
+    Response response = await Dio().post(AppStrings.api_url + AppStrings.post_endpoint, data: formData).catchError((Object error){
+      setState(() {
+        controller.reset();
+      });
+    });
 
     if(response.statusCode == 200){
       final parsed = json.decode(response.toString());
