@@ -4,10 +4,12 @@ import 'package:deep_app/task/task.dart';
 import 'package:page_indicator/page_indicator.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:deep_app/history/history_repository.dart';
+import 'package:deep_app/home/tab_navigator.dart';
 
 class ResultPage extends StatelessWidget {
   ResultPage({this.task});
   final Task task;
+  bool isDeleted = false;
 
   @override
   Widget build(BuildContext context) {
@@ -24,9 +26,13 @@ class ResultPage extends StatelessWidget {
                   showDialog(
                       context: context,
                       builder: (BuildContext context) {
-                        showAlertDialog(context);
+                        return showAlertDialog(context, task.id);
                       }
-                  );
+                  ).then((val){
+                    if(isDeleted){
+                      Navigator.pop(context, true);
+                    }
+                  });
                 },
                 icon: Icon(
                   Icons.delete,
@@ -166,7 +172,7 @@ class ResultPage extends StatelessWidget {
     return imagesWidgets;
   }
 
-  Widget showAlertDialog(BuildContext context){
+  Widget showAlertDialog(BuildContext context, int taskid){
     return AlertDialog(
       content: Text(AppStrings.delete_alert_content),
       actions: <Widget>[
@@ -182,13 +188,19 @@ class ResultPage extends StatelessWidget {
                   resultsPage = false;
                 });
               });*/
-              Navigator.pop(context);
+              _deleteTaskFromRepository(taskid).then((x){
+                //Navigator.popUntil(context, ModalRoute.withName("/"));
+                Navigator.pop(context);
+                isDeleted = true;
+              });
             }
         ),
         FlatButton(
           child: Text(AppStrings.no),
           onPressed: () {
             Navigator.pop(context);
+            isDeleted = false;
+            //Navigator.popUntil(context, ModalRoute.withName(TabNavigatorRoutes.root));
           },
         )
       ],

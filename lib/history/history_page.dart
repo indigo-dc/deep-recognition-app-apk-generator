@@ -4,6 +4,7 @@ import 'package:deep_app/task/task.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'dart:io';
 import 'package:deep_app/history/history_repository.dart';
+import 'package:deep_app/history/result_page.dart';
 
 class HistoryPage extends StatefulWidget {
   HistoryPage({this.onPush});
@@ -83,7 +84,21 @@ class HistoryPageState extends State<HistoryPage> with AutomaticKeepAliveClientM
             (int index){
           return Container(
             child: GestureDetector(
-              onTap: () => widget.onPush(tasks[index]),
+              onTap: () {
+                //widget.onPush(tasks[index]);
+                var future = Navigator.push(context, MaterialPageRoute(builder: (context) => ResultPage(task: tasks[index])));
+                future.then((val){
+                  if(val == true){
+                    //print("popped:" + val.toString());
+                    loadTasks().then((t){
+                      setState(() {
+                        print(t);
+                        this.tasks = t;
+                      });
+                    });
+                  }
+                });
+              },
               child: Stack(
                 children: <Widget>[
                   FadeInImage(
