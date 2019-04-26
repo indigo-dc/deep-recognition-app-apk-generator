@@ -5,6 +5,7 @@ import 'package:page_indicator/page_indicator.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:deep_app/history/history_repository.dart';
 import 'package:deep_app/home/tab_navigator.dart';
+import 'package:photo_view/photo_view.dart';
 
 class ResultPage extends StatelessWidget {
   ResultPage({this.task});
@@ -166,7 +167,16 @@ class ResultPage extends StatelessWidget {
     List<Widget> imagesWidgets  = [];
 
     for(String ip in img_paths){
-      imagesWidgets.add(Image.asset(ip));
+      imagesWidgets.add(
+          //Image.asset(ip)
+        PhotoView(
+          imageProvider: AssetImage(ip),
+          backgroundDecoration: BoxDecoration(color: Colors.white),
+          minScale: PhotoViewComputedScale.contained,
+          maxScale: PhotoViewComputedScale.contained * 1.8,
+          initialScale: PhotoViewComputedScale.contained,
+        )
+      );
     }
 
     return imagesWidgets;

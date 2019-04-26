@@ -13,6 +13,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:photo_view/photo_view.dart';
 
 
+
 class AnalysisPage extends StatefulWidget {
   AnalysisPage({this.onPush});
   final ValueChanged<Task> onPush;
@@ -45,6 +46,7 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
   AnimationController controller;
   Animation<Offset> offset;
 
+  PhotoViewControllerBase pv_controller;
   PhotoViewScaleStateController scaleStateController;
 
   String image_preview_path = AppStrings.preview_default_img_path;
@@ -59,6 +61,7 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
 
   bool start_task_visibility = false;
 
+
   @override
   void initState() {
     //super.initState();
@@ -68,9 +71,15 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
     offset = Tween<Offset>(begin: Offset(0.0, 0.0), end: Offset.zero)
         .animate(controller);
 
-    scaleStateController = PhotoViewScaleStateController();
-
     super.initState();
+  }
+
+  @override
+  void didUpdateWidget(AnalysisPage oldWidget) {
+    if(Navigator.canPop(context)){
+      Navigator.pop(context);
+    }
+    super.didUpdateWidget(oldWidget);
   }
 
   @override
@@ -156,10 +165,12 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
                           items.removeLast();
                         }
                         setState(() {
-                          image_preview_path = newImg.path;
+                          //image_preview_path = newImg.path;
+                          changePreviewImage(newImg.path);
+
                           items.add(PhotoItem(3, newImg.path));
                           start_task_visibility = true;
-                          print("ScaleState: " + scaleStateController.scaleState.toString());
+                          //print("ScaleState: " + scaleStateController.scaleState.toString());
                           //scaleStateController.scaleState = PhotoViewScaleState.initial;
 
                         });
@@ -179,10 +190,12 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
                           items.removeLast();
                         }
                         setState(() {
-                          image_preview_path = img.path;
+                          //image_preview_path = img.path;
+                          changePreviewImage(img.path);
+
                           items.add(PhotoItem(3, img.path));
                           start_task_visibility = true;
-                          print("ScaleState: " + scaleStateController.scaleState.toString());
+                          //print("ScaleState: " + scaleStateController.scaleState.toString());
                           //scaleStateController.scaleState = PhotoViewScaleState.initial;
 
                         });
@@ -207,7 +220,7 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
                 padding: EdgeInsets.all(5.0),
                 child: Material(
                     elevation: 4.0,
-                    child: getImageStack(item)
+                    child: getImageStack(item, index)
                 ),
               );
             }
@@ -218,36 +231,39 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
 
   
 
-  Expanded buildPreviewImageExpanded(String path ){
-    var max_scale_multiplier;
-    PhotoViewComputedScale pvcs_max;
+  Expanded buildPreviewImageExpanded(String path){
+    var pv;
+
     if(path != AppStrings.preview_default_img_path){
-      pvcs_max = PhotoViewComputedScale.contained * 1.8;
+      //pv = buildPhotoView(path);
+      pv = PhotoView(
+        imageProvider: AssetImage(path),
+        backgroundDecoration: BoxDecoration(color: Colors.white),
+        minScale: PhotoViewComputedScale.contained,
+        maxScale: PhotoViewComputedScale.contained * 1.8,
+        initialScale: PhotoViewComputedScale.contained,
+      );
     }else{
-      pvcs_max = PhotoViewComputedScale.contained;
+      pv = Image.asset(path);
     }
 
-    setState(() {
-      scaleStateController.scaleState = PhotoViewScaleState.initial;
-    });
-
-    final pv = PhotoView(
-      imageProvider: AssetImage(path),
-      backgroundDecoration: BoxDecoration(color: Colors.white),
-      minScale: PhotoViewComputedScale.contained,
-      maxScale: pvcs_max,
-      initialScale: PhotoViewComputedScale.contained,
-      scaleStateController: scaleStateController,
-    );
     return Expanded(
         child: Stack(
         children: <Widget>[
           Align(
             alignment: Alignment.center,
-            child: ClipRect(
-              child: pv
-            ),
+            child: GestureDetector(
+              onTap: () {
+                if(image_preview_path == AppStrings.preview_default_img_path){
+                  showSnackbar("Take a photo or choose from gallery");
+                }
+              },
+              child: ClipRect(
+                child: pv
+              ),
+            )
           ),
+
           Align(
             alignment: Alignment.topCenter,
             child: FadeTransition(
@@ -281,15 +297,17 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
     );
   }
 
-  Stack getImageStack(PhotoItem item){
+  Stack getImageStack(PhotoItem item, index){
     return Stack(
       children: <Widget>[
         GestureDetector(
           onTap: () {
             if(image_preview_path != item.path){
               setState(() {
-                image_preview_path = item.path;
-                print("ScaleState: " + scaleStateController.scaleState.toString());
+                //image_preview_path = item.path;
+                changePreviewImage(item.path);
+                //page_controller.animateTo(offset, duration: null, curve: null) = 
+                //print("ScaleState: " + scaleStateController.scaleState.toString());
                 //scaleStateController.scaleState = PhotoViewScaleState.initial;
 
               });
@@ -310,15 +328,21 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
                 items.remove(item);
                 final lastItem = items.last;
                 if(lastItem is PhotoItem){
-                  image_preview_path = lastItem.path;
-                  print("ScaleState: " + scaleStateController.scaleState.toString());
+                  //image_preview_path = lastItem.path;
+                  changePreviewImage(lastItem.path);
+
+
+
+                  //print("ScaleState: " + scaleStateController.scaleState.toString());
                   //scaleStateController.scaleState = PhotoViewScaleState.initial;
 
+
                 }else{
-                  image_preview_path = AppStrings.preview_default_img_path;
+                  //image_preview_path = AppStrings.preview_default_img_path;
                   items.add(InfoItem(1, AppStrings.select_photo_info));
                   start_task_visibility = false;
-                  print("ScaleState: " + scaleStateController.scaleState.toString());
+                  changePreviewImage(AppStrings.preview_default_img_path);
+                  //print("ScaleState: " + scaleStateController.scaleState.toString());
                   //scaleStateController.scaleState = PhotoViewScaleState.initial;
 
                 }
@@ -333,17 +357,30 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
     );
   }
 
-  onStartTaskPressed() async {
-    List <UploadFileInfo> pitems = [];
-    List <String> photoPaths = [];
-    for(ListItem li in items){
-      if(li is PhotoItem){
-        pitems.add(UploadFileInfo(File(li.path), li.path));
-        photoPaths.add(li.path);
-      }
+  List<PhotoView> buildPhotoViewsList(List <String> img_paths) {
+    List<PhotoView> imagesWidgets = [];
+
+    for (String ip in img_paths) {
+      imagesWidgets.add(
+        //Image.asset(ip)
+          PhotoView(
+            imageProvider: AssetImage(ip),
+            backgroundDecoration: BoxDecoration(color: Colors.white),
+            minScale: PhotoViewComputedScale.contained,
+            maxScale: PhotoViewComputedScale.contained * 1.8,
+            initialScale: PhotoViewComputedScale.contained,
+          )
+      );
     }
+    return imagesWidgets;
+  }
+
+  onStartTaskPressed() async {
+
+    final photoPaths = getImagePathsList(items);
+
     FormData formData = new FormData.from({
-      "data": pitems
+      "data": photoPaths
     });
 
     controller.forward();
@@ -351,9 +388,7 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
     Response response = await Dio().post(AppStrings.api_url + AppStrings.post_endpoint, data: formData).catchError((Object error){
       setState(() {
         controller.reset();
-        Scaffold.of(context).showSnackBar(SnackBar(
-          content: Text(error.toString()),
-        ));
+        showSnackbar(error.toString());
       });
     });
 
@@ -391,6 +426,40 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
     start_task_visibility = false;
     //scaleStateController.scaleState = Pho
 
+  }
+
+  showSnackbar(String text){
+    Scaffold.of(context).showSnackBar(SnackBar(
+      content: Text(text),
+    ));
+  }
+
+  changePreviewImage(String path){
+    image_preview_path = path;
+  }
+
+  List<String> getImagePathsList(List<ListItem> items){
+    List <UploadFileInfo> pitems = [];
+    List <String> photoPaths = [];
+    for(ListItem li in items){
+      if(li is PhotoItem){
+        pitems.add(UploadFileInfo(File(li.path), li.path));
+        photoPaths.add(li.path);
+      }
+    }
+    return photoPaths;
+  }
+
+  int getIndexFromListByPath(List<ListItem> items, String path){
+    for(int i =0; i < items.length; i++){
+      if(items[i] is PhotoItem){
+        PhotoItem pi = items[i];
+        if(path == pi.path){
+          return i-2;
+        }
+      }
+    }
+    return -1;
   }
 
   @override
