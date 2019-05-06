@@ -86,7 +86,7 @@ class ResultPage extends StatelessWidget {
                               text_color = Colors.red;
                               icon = Icon(
                                 Icons.warning,
-                                color: Colors.grey,
+                                color: Colors.white,
                               );
                             }else{
                               text_color = Colors.white;

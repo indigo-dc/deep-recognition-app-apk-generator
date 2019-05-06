@@ -10,17 +10,10 @@ class HistoryPage extends StatefulWidget {
   HistoryPage({this.onPush});
   final ValueChanged<Task> onPush;
 
-  //List<Task> tasks = [];
-
-  //bool resultsPage = false;
-
-  //Task currentTask;
-
   @override
   State<StatefulWidget> createState() {
     return HistoryPageState();
   }
-
 }
 
 class HistoryPageState extends State<HistoryPage> with AutomaticKeepAliveClientMixin{
@@ -44,38 +37,34 @@ class HistoryPageState extends State<HistoryPage> with AutomaticKeepAliveClientM
     super.didUpdateWidget(oldWidget);
   }
 
-  /*@override
-  void initState() {
-    loadTasks().then((t){
-      setState(() {
-        print(t);
-        tasks = t;
-        for(Task t in tasks){
-          precacheImage(FileImage(File(t.image_paths[0])),context);
-        }
-      });
-    });
-    super.initState();
-  }*/
-
   @override
   Widget build(BuildContext context) {
+
+    var body;
+    if(tasks.isNotEmpty){
+      body = GridView.count(
+          crossAxisCount: 2,
+          mainAxisSpacing: 15.0,
+          crossAxisSpacing: 15.0,
+          childAspectRatio: 1.5,
+          padding: EdgeInsets.only(left: 10.0, top: 10.0, right: 10.0, bottom: 0.0),
+          children: buildGridTiles(tasks)
+      );
+    }else{
+      body = Container(
+        child: Align(
+          alignment: Alignment.center,
+          child: Text(AppStrings.no_history),
+        ),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppColors.primary_color,
         title: Text(AppStrings.app_label),
       ),
-      body:
-      GridView.count(
-            crossAxisCount: 2,
-            mainAxisSpacing: 15.0,
-            crossAxisSpacing: 15.0,
-            //padding: EdgeInsets.all(10.0),
-            childAspectRatio: 1.5,
-            padding: EdgeInsets.only(left: 10.0, top: 10.0, right: 10.0, bottom: 0.0),
-            children: buildGridTiles(tasks)
-        ),
-
+      body: body
     );
   }
 
@@ -85,11 +74,9 @@ class HistoryPageState extends State<HistoryPage> with AutomaticKeepAliveClientM
           return Container(
             child: GestureDetector(
               onTap: () {
-                //widget.onPush(tasks[index]);
                 var future = Navigator.push(context, MaterialPageRoute(builder: (context) => ResultPage(task: tasks[index])));
                 future.then((val){
                   if(val == true){
-                    //print("popped:" + val.toString());
                     loadTasks().then((t){
                       setState(() {
                         print(t);
@@ -104,7 +91,7 @@ class HistoryPageState extends State<HistoryPage> with AutomaticKeepAliveClientM
                   FadeInImage(
                       fit: BoxFit.cover,
                       width: double.infinity,
-                      placeholder: MemoryImage(kTransparentImage),//AssetImage("assets/images/plant.png"),
+                      placeholder: MemoryImage(kTransparentImage),
                       image: FileImage(File(tasks[index].image_paths[0]))
                   ),
                   Align(

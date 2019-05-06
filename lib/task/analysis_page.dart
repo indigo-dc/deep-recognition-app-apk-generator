@@ -409,15 +409,29 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
   }
 
   onStartTaskPressed() async {
-
     final photoPaths = getImagePathsList(items);
+    List <UploadFileInfo> pitems = [];
+    List <FormData> fdatas = [];
 
-    FormData formData = new FormData.from({
-      "data": photoPaths
-    });
+    for(String p in photoPaths){
+      pitems.add(UploadFileInfo(File(p), p));
+      var pitem = UploadFileInfo(File(p), p);
+      fdatas.add(FormData.from({
+        "data": pitem
+      }));
+    }
+
+
+
+
+
+    FormData formData = new FormData.from(
+        {
+      "data": pitems}
+    );
+
 
     controller.forward();
-
     Response response = await Dio().post(AppStrings.api_url + AppStrings.post_endpoint, data: formData).catchError((Object error){
       setState(() {
         controller.reset();
@@ -425,14 +439,12 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
       });
     });
 
+
+
     if(response.statusCode == 200){
       final parsed = json.decode(response.toString());
-
       Results results = Results.fromJson(parsed);
-
-      //HistoryRepository hr = HistoryRepository();
       controller.reset();
-      //final task = await hr.addTask(photoPaths, results);
       addTaskToRepository(photoPaths, results).then((t){
         setState(() {
           setDefaultData();

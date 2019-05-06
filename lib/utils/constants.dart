@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class AppStrings {
-  static String app_label = "Marine Conus API";
+  static String app_label = "INDIGO Plant Recognition";
   static String analysis = "Analysis";
   static String history = "History";
   static String credits = "Credits";
@@ -14,13 +14,14 @@ class AppStrings {
   static String delete_alert_content = "The image will be deleted. Are you sure?";
   static String no = "NO";
   static String yes = "YES";
+  static String no_history = "No history";
 }
 
 class AppColors {
-  static const Color primary_color = Color(0xFF35B4C5);
-  static const Color accent_color = Color(0xFF3990DC);
+  static const Color primary_color = Color(0xFF4CAF50);
+  static const Color accent_color = Color(0xFFCDDC39);
   static const Color notification_color = Color(0xD3212121);
-  static const Color primary_dark_color = Color(0xFF007393);
+  static const Color primary_dark_color = Color(0xFF388E3C);
 }
 
 class AppDimensions {
