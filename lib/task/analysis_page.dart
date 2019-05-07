@@ -11,7 +11,7 @@ import 'package:deep_app/task/results_page_widget.dart';
 import 'package:deep_app/history/history_repository.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:photo_view/photo_view.dart';
-import 'package:photo_view/photo_view_gallery.dart';
+import 'package:deep_app/api/recognition_api.dart';
 
 
 
@@ -410,7 +410,10 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
 
   onStartTaskPressed() async {
     final photoPaths = getImagePathsList(items);
-    List <UploadFileInfo> pitems = [];
+
+    RecognitionApi().postTask(photoPaths);
+
+    /*List <UploadFileInfo> pitems = [];
     List <FormData> fdatas = [];
 
     for(String p in photoPaths){
@@ -420,8 +423,6 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
         "data": pitem
       }));
     }
-
-
 
 
 
@@ -451,7 +452,7 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
         });
         widget.onPush(t);
       });
-    }
+    }*/
   }
 
   Future<Task> addTaskToRepository (List<String> photoPaths, Results results) async {
