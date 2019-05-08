@@ -15,6 +15,11 @@ class AppStrings {
   static String no = "NO";
   static String yes = "YES";
   static String no_history = "No history";
+  static String default_preview_message = "Take a photo or choose from gallery";
+  static String task_processing_message = "Please wait...";
+  static String network_exception_message = "Network connection problem";
+  static String network_error = "Error code";
+  static String launch_exception = "Could not launch";
 }
 
 class AppColors {
@@ -22,8 +27,4 @@ class AppColors {
   static const Color accent_color = Color(0xFFCDDC39);
   static const Color notification_color = Color(0xD3212121);
   static const Color primary_dark_color = Color(0xFF388E3C);
-}
-
-class AppDimensions {
-  static const double task_result_row_size = 18.0;
 }

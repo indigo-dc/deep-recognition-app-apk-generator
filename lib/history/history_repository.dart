@@ -1,6 +1,5 @@
-import 'package:deep_app/task/task.dart';
+import 'package:deep_app/analysis/task.dart';
 import 'package:deep_app/utils/offline_storage.dart';
-
 
 class HistoryRepository{
 

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:deep_app/utils/constants.dart';
-import 'package:deep_app/task/task.dart';
+import 'package:deep_app/analysis/task.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'dart:io';
 import 'package:deep_app/history/history_repository.dart';
@@ -27,7 +27,7 @@ class HistoryPageState extends State<HistoryPage> with AutomaticKeepAliveClientM
     }
     loadTasks().then((t){
       setState(() {
-        print(t);
+        //print(t);
         tasks = t;
         /*for(Task t in tasks){
           precacheImage(FileImage(File(t.image_paths[0])),context);
@@ -79,7 +79,7 @@ class HistoryPageState extends State<HistoryPage> with AutomaticKeepAliveClientM
                   if(val == true){
                     loadTasks().then((t){
                       setState(() {
-                        print(t);
+                        //print(t);
                         this.tasks = t;
                       });
                     });

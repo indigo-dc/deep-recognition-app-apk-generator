@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:deep_app/utils/constants.dart';
-import 'package:deep_app/task/task.dart';
+import 'package:deep_app/analysis/task.dart';
 import 'package:page_indicator/page_indicator.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:deep_app/history/history_repository.dart';
-import 'package:deep_app/home/tab_navigator.dart';
 import 'package:photo_view/photo_view.dart';
 
 class ResultPage extends StatelessWidget {
@@ -120,7 +119,7 @@ class ResultPage extends StatelessWidget {
                                     child: Text(
                                       item.label,
                                       style: TextStyle(
-                                        fontSize: AppDimensions.task_result_row_size,
+                                        fontSize: 18.0,
                                         color: text_color,
                                       ),
                                     ),
@@ -130,7 +129,7 @@ class ResultPage extends StatelessWidget {
                                     child:
                                     GestureDetector(
                                       onTap: () {
-                                        print("Tapped info icon");
+                                        //print("Tapped info icon");
                                         _launchURL(item.info.links[1].url);
                                       },
                                       child: Icon(
@@ -145,7 +144,7 @@ class ResultPage extends StatelessWidget {
                                       (item.probability * 100).toStringAsFixed(2) + " %",
                                       textAlign: TextAlign.right,
                                       style: TextStyle(
-                                          fontSize: AppDimensions.task_result_row_size,
+                                          fontSize: 18.0,
                                           color: text_color
                                       ),
                                     ),
@@ -163,10 +162,10 @@ class ResultPage extends StatelessWidget {
     );
   }
 
-  List<Widget> getImagesWidgetList(List <String> img_paths){
+  List<Widget> getImagesWidgetList(List <String> imgPaths){
     List<Widget> imagesWidgets  = [];
 
-    for(String ip in img_paths){
+    for(String ip in imgPaths){
       imagesWidgets.add(
           //Image.asset(ip)
         PhotoView(
@@ -189,17 +188,7 @@ class ResultPage extends StatelessWidget {
         FlatButton(
             child: Text(AppStrings.yes),
             onPressed: () {
-              /*
-              _deleteTaskFromRepository(widget.currentTask.id).then((d){
-                return loadTasks();
-              }).then((l){
-                setState(() {
-                  widget.tasks = l;
-                  resultsPage = false;
-                });
-              });*/
               _deleteTaskFromRepository(taskid).then((x){
-                //Navigator.popUntil(context, ModalRoute.withName("/"));
                 Navigator.pop(context);
                 isDeleted = true;
               });
@@ -210,7 +199,6 @@ class ResultPage extends StatelessWidget {
           onPressed: () {
             Navigator.pop(context);
             isDeleted = false;
-            //Navigator.popUntil(context, ModalRoute.withName(TabNavigatorRoutes.root));
           },
         )
       ],
@@ -221,7 +209,8 @@ class ResultPage extends StatelessWidget {
     if (await canLaunch(url)) {
       await launch(url);
     } else {
-      throw 'Could not launch $url';
+      final msg = AppStrings.launch_exception;
+      throw "$msg $url";
     }
   }
 

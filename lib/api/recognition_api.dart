@@ -1,23 +1,29 @@
 import 'package:deep_app/utils/constants.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'package:http_parser/http_parser.dart';
 
 
 class RecognitionApi{
   final String server = AppStrings.api_url;
 
-  postTask(List<String> photoPaths) async {
+  Future<String> postTask(List<String> photoPaths) async {
     var url = server + AppStrings.post_endpoint;
     var uri = Uri.parse(url);
     var request = http.MultipartRequest("POST", uri);
     for(String p in photoPaths){
-      request.files.add(await http.MultipartFile.fromPath("data", p));
+      request.files.add(await http.MultipartFile.fromPath("data", p, contentType: MediaType('image', 'jpeg')));
     }
-    var response = await request.send();
-    if(response.statusCode == 200){
-      //print("Uploaded");
-      //final parsed = json.decode(response.toString());
-      //print(parsed);
+    var streamedResponse = await request.send().catchError((Object error){
+      throw AppStrings.network_exception_message;
+    });
+
+    if(streamedResponse.statusCode == 200){
+      http.Response response = await http.Response.fromStream(streamedResponse);
+      return response.body;
+    }else{
+      final ne = AppStrings.network_error;
+      final ec = streamedResponse.statusCode.toString();
+      throw '$ne: $ec';
     }
   }
 

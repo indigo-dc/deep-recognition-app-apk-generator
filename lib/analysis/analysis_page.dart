@@ -1,40 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:deep_app/utils/constants.dart';
-import 'package:deep_app/task/list_item.dart';
-import 'package:deep_app/task/task.dart';
+import 'package:deep_app/analysis/list_item.dart';
+import 'package:deep_app/analysis/task.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-import 'package:dio/dio.dart';
-import 'package:deep_app/task/task.dart';
 import 'dart:convert';
-import 'package:deep_app/task/results_page_widget.dart';
 import 'package:deep_app/history/history_repository.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:deep_app/api/recognition_api.dart';
 
-
-
 class AnalysisPage extends StatefulWidget {
   AnalysisPage({this.onPush});
   final ValueChanged<Task> onPush;
-
-  /*List <ListItem> items = [
-    ButtonItem(-3, AppStrings.camera, 35),
-    ButtonItem(-2, AppStrings.file, 35),
-    InfoItem(-1, AppStrings.select_photo_info),
-    //PhotoItem(3, "test"),
-    //PhotoItem(4, "test")
-  ];*/
-
-
-  //String image_preview_path = AppStrings.preview_default_img_path;
-
-  //bool start_task_visibility = false;
-
-  bool pickImageScreen = true;
-
-  Task task;
 
   @override
   State<StatefulWidget> createState() {
@@ -47,27 +25,18 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
   AnimationController controller;
   Animation<Offset> offset;
 
-  String image_preview_path = AppStrings.preview_default_img_path;
-
-  List <ListItem> items = [
-    ButtonItem(-3, AppStrings.camera, 35),
-    ButtonItem(-2, AppStrings.file, 35),
-    InfoItem(-1, AppStrings.select_photo_info),
-    //PhotoItem(3, "test"),
-    //PhotoItem(4, "test")
-  ];
-
-  bool start_task_visibility = false;
+  String image_preview_path;
+  List<ListItem> items;
+  bool start_task_visibility;
 
 
   @override
   void initState() {
-    //super.initState();
-
     controller = AnimationController( vsync: this, duration: Duration(milliseconds: 300));
-
     offset = Tween<Offset>(begin: Offset(0.0, 0.0), end: Offset.zero)
         .animate(controller);
+
+    setDefaultData();
 
     super.initState();
   }
@@ -108,24 +77,6 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
   Column getPickColumn(){
     return Column(
       children: <Widget>[
-        /*AppBar(
-          backgroundColor: AppColors.primary_color,
-          title: Text(AppStrings.app_label),
-          actions: <Widget>[
-            Visibility(
-              visible: widget.start_task_visibility,
-              child: IconButton(
-                  onPressed: (
-                      onStartTaskPressed
-                  ),
-                  icon: Icon(
-                    Icons.play_arrow,
-                    size: 35.0,
-                  )
-              ),
-            )
-          ],
-        ),*/
         buildPhotosManagementBar(),
         buildPreviewImageExpanded(image_preview_path)
       ],
@@ -163,14 +114,9 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
                           items.removeLast();
                         }
                         setState(() {
-                          //image_preview_path = newImg.path;
-                          changePreviewImage(newImg.path);
-
-                          items.add(PhotoItem(3, newImg.path));
+                          image_preview_path = newImg.path;
+                          items.add(PhotoItem(newImg.path));
                           start_task_visibility = true;
-                          //print("ScaleState: " + scaleStateController.scaleState.toString());
-                          //scaleStateController.scaleState = PhotoViewScaleState.initial;
-
                         });
                       }
                     },
@@ -188,14 +134,9 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
                           items.removeLast();
                         }
                         setState(() {
-                          //image_preview_path = img.path;
-                          changePreviewImage(img.path);
-
-                          items.add(PhotoItem(3, img.path));
+                          image_preview_path = img.path;
+                          items.add(PhotoItem(img.path));
                           start_task_visibility = true;
-                          //print("ScaleState: " + scaleStateController.scaleState.toString());
-                          //scaleStateController.scaleState = PhotoViewScaleState.initial;
-
                         });
                       }
                     },
@@ -232,11 +173,7 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
   Expanded buildPreviewImageExpanded(String path){
     var pv;
 
-    //int previewIndex = getIndexFromListByPath(items, path);
-    //pageController = PageController(initialPage: previewIndex);
-
     if(path != AppStrings.preview_default_img_path){
-      //pv = buildPhotoView(path);
       pv = PhotoView(
         imageProvider: AssetImage(path),
         backgroundDecoration: BoxDecoration(color: Colors.white),
@@ -244,22 +181,6 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
         maxScale: PhotoViewComputedScale.contained * 1.8,
         initialScale: PhotoViewComputedScale.contained,
       );
-
-      //var imgsList = getImagePathsList(items);
-
-      /*pv = PhotoViewGallery.builder(
-          itemCount: imgsList.length,
-          builder: (BuildContext context, int index) {
-            return PhotoViewGalleryPageOptions(
-              imageProvider: AssetImage(imgsList[index]),
-              minScale: PhotoViewComputedScale.contained,
-              maxScale: PhotoViewComputedScale.contained * 1.8,
-              initialScale: PhotoViewComputedScale.contained
-            );
-          },
-        backgroundDecoration: BoxDecoration(color: Colors.white),
-        pageController: pageController,
-      );*/
     }else{
       pv = Image.asset(path);
     }
@@ -272,7 +193,7 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
             child: GestureDetector(
               onTap: () {
                 if(image_preview_path == AppStrings.preview_default_img_path){
-                  showSnackbar("Take a photo or choose from gallery");
+                  showSnackbar(AppStrings.default_preview_message);
                 }
               },
               child: ClipRect(
@@ -291,7 +212,7 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
                     width: double.infinity,
                     color: AppColors.notification_color,
                     child: Text(
-                      "Please wait...",
+                      AppStrings.task_processing_message,
                       style: TextStyle(color: Colors.white),
                     ),
                   ),
@@ -321,13 +242,7 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
           onTap: () {
             if(image_preview_path != item.path){
               setState(() {
-                //image_preview_path = item.path;
-                changePreviewImage(item.path);
-
-                //page_controller.animateTo(offset, duration: null, curve: null) =
-                //print("ScaleState: " + scaleStateController.scaleState.toString());
-                //scaleStateController.scaleState = PhotoViewScaleState.initial;
-
+                image_preview_path = item.path;
               });
             }
           },
@@ -348,21 +263,11 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
                   items.remove(item);
                   final lastItem = items.last;
                   if(lastItem is PhotoItem){
-                    //image_preview_path = lastItem.path;
-                    changePreviewImage(lastItem.path);
-
-                    //print("ScaleState: " + scaleStateController.scaleState.toString());
-                    //scaleStateController.scaleState = PhotoViewScaleState.initial;
-
-
+                    image_preview_path = lastItem.path;
                   }else{
-                    //image_preview_path = AppStrings.preview_default_img_path;
-                    items.add(InfoItem(1, AppStrings.select_photo_info));
+                    items.add(InfoItem(AppStrings.select_photo_info));
                     start_task_visibility = false;
-                    changePreviewImage(AppStrings.preview_default_img_path);
-                    //print("ScaleState: " + scaleStateController.scaleState.toString());
-                    //scaleStateController.scaleState = PhotoViewScaleState.initial;
-
+                    image_preview_path = AppStrings.preview_default_img_path;
                   }
                 });
               },
@@ -380,22 +285,17 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
                   ),
                 )
               )
-            /*Icon(
-              Icons.delete,
-              color: Colors.red,
-            )*/
           ),
         )
       ],
     );
   }
 
-  List<PhotoView> buildPhotoViewsList(List <String> img_paths) {
+  List<PhotoView> buildPhotoViewsList(List <String> imgPaths) {
     List<PhotoView> imagesWidgets = [];
 
-    for (String ip in img_paths) {
+    for (String ip in imgPaths) {
       imagesWidgets.add(
-        //Image.asset(ip)
           PhotoView(
             imageProvider: AssetImage(ip),
             backgroundDecoration: BoxDecoration(color: Colors.white),
@@ -409,31 +309,11 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
   }
 
   onStartTaskPressed() async {
+    controller.forward();
+
     final photoPaths = getImagePathsList(items);
 
-    RecognitionApi().postTask(photoPaths);
-
-    /*List <UploadFileInfo> pitems = [];
-    List <FormData> fdatas = [];
-
-    for(String p in photoPaths){
-      pitems.add(UploadFileInfo(File(p), p));
-      var pitem = UploadFileInfo(File(p), p);
-      fdatas.add(FormData.from({
-        "data": pitem
-      }));
-    }
-
-
-
-    FormData formData = new FormData.from(
-        {
-      "data": pitems}
-    );
-
-
-    controller.forward();
-    Response response = await Dio().post(AppStrings.api_url + AppStrings.post_endpoint, data: formData).catchError((Object error){
+    String stringResponse = await RecognitionApi().postTask(photoPaths).catchError((Object error){
       setState(() {
         controller.reset();
         showSnackbar(error.toString());
@@ -441,18 +321,15 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
     });
 
 
-
-    if(response.statusCode == 200){
-      final parsed = json.decode(response.toString());
-      Results results = Results.fromJson(parsed);
-      controller.reset();
-      addTaskToRepository(photoPaths, results).then((t){
-        setState(() {
-          setDefaultData();
-        });
-        widget.onPush(t);
+    final parsed = json.decode(stringResponse);
+    Results results = Results.fromJson(parsed);
+    controller.reset();
+    addTaskToRepository(photoPaths, results).then((t){
+      setState(() {
+        setDefaultData();
       });
-    }*/
+      widget.onPush(t);
+    });
   }
 
   Future<Task> addTaskToRepository (List<String> photoPaths, Results results) async {
@@ -463,14 +340,11 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
   setDefaultData(){
     image_preview_path = AppStrings.preview_default_img_path;
     items = [
-      ButtonItem(-3, AppStrings.camera, 35),
-      ButtonItem(-2, AppStrings.file, 35),
-      InfoItem(-1, AppStrings.select_photo_info),
-      //PhotoItem(3, "test"),
-      //PhotoItem(4, "test")
+      ButtonItem(AppStrings.camera),
+      ButtonItem(AppStrings.file),
+      InfoItem(AppStrings.select_photo_info),
     ];
     start_task_visibility = false;
-    //scaleStateController.scaleState = Pho
   }
 
   showSnackbar(String text){
@@ -484,27 +358,13 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
   }
 
   List<String> getImagePathsList(List<ListItem> items){
-    List <UploadFileInfo> pitems = [];
     List <String> photoPaths = [];
     for(ListItem li in items){
       if(li is PhotoItem){
-        pitems.add(UploadFileInfo(File(li.path), li.path));
         photoPaths.add(li.path);
       }
     }
     return photoPaths;
-  }
-
-  int getIndexFromListByPath(List<ListItem> items, String path){
-    for(int i =0; i < items.length; i++){
-      if(items[i] is PhotoItem){
-        PhotoItem pi = items[i];
-        if(path == pi.path){
-          return i-2;
-        }
-      }
-    }
-    return -1;
   }
 
   @override

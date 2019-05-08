@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:deep_app/home/bottom_navigation.dart';
-import 'package:deep_app/task/new_multi_image_task_widget.dart';
+import 'package:deep_app/app/bottom_navigation.dart';
 import 'package:deep_app/history/history_page.dart';
 import 'package:deep_app/history/result_page.dart';
-import 'package:deep_app/task/analysis_page.dart';
+import 'package:deep_app/analysis/analysis_page.dart';
 import 'package:deep_app/credits/credits_page.dart';
-import 'package:deep_app/task/task.dart';
+import 'package:deep_app/analysis/task.dart';
 
 class TabNavigatorRoutes{
   static const String root = "/";

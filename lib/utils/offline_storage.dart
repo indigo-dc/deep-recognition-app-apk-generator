@@ -1,8 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:deep_app/task/task.dart';
+import 'package:deep_app/analysis/task.dart';
 import 'dart:convert';
-
 
 class OfflineStorage{
 
@@ -10,10 +8,9 @@ class OfflineStorage{
 
    static putList(TasksList tasksList) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    //TasksList tasksList = TasksList(tasks: tasks);
     final myJsonStr = jsonEncode(tasksList.toJson());
-    print("json encoded length: " + myJsonStr.length.toString());
-    print(tasksList.toJson());
+    //print("json encoded length: " + myJsonStr.length.toString());
+    //print(tasksList.toJson());
     await prefs.setString('tasks', myJsonStr);
   }
 
@@ -21,14 +18,14 @@ class OfflineStorage{
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final tasksJson = prefs.getString("tasks");
     if(tasksJson != null){
-      print("json decoded length: " + tasksJson.length.toString());
+      //print("json decoded length: " + tasksJson.length.toString());
       Map<String, dynamic> value = jsonDecode(tasksJson);
-      print(value);
+      //print(value);
       TasksList tasksList = TasksList.fromJson(value);
-      print(tasksList);
+      //print(tasksList);
       return tasksList;
     }else{
-      print("json decoded length: empty");
+      //print("json decoded length: empty");
       return new TasksList(tasks: []);
     }
   }
@@ -48,8 +45,7 @@ class TasksList{
     );
   }
 
-  Map<String, dynamic> toJson() =>
-      {
+  Map<String, dynamic> toJson() => {
         "tasks": tasks.map((t) => t.toJson()).toList()
       };
 }
