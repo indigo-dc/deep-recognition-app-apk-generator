@@ -99,47 +99,20 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
             if(item is ButtonItem) {
               if(item.text == AppStrings.camera){
                 return RaisedButton(
+                    key: Key("cameraButton"),
                     elevation: 0.0,
                     padding: EdgeInsets.all(10.0),
                     color: AppColors.accent_color,
-                    onPressed: () async {
-                      File img = await ImagePicker.pickImage(source: ImageSource.camera);
-                      final dir = await getApplicationDocumentsDirectory();
-                      final path = dir.path;
-                      final timestamp = DateTime.now().millisecondsSinceEpoch;
-                      final timestampString = timestamp.toString();
-                      File newImg = await img.copy("$path/$timestampString.jpg");
-                      if(newImg.path.isNotEmpty && items.length >= 3){
-                        if(items[2] is InfoItem){
-                          items.removeLast();
-                        }
-                        setState(() {
-                          image_preview_path = newImg.path;
-                          items.add(PhotoItem(newImg.path));
-                          start_task_visibility = true;
-                        });
-                      }
-                    },
+                    onPressed: onPickImageFromCameraPressed,
                     child: getButtonColumn(Icons.photo_camera, item.text)
                 );
               }else if(item.text == AppStrings.file){
                 return RaisedButton(
+                    key: Key("galleryButton"),
                     elevation: 0.0,
                     padding: EdgeInsets.all(10.0),
                     color: AppColors.accent_color,
-                    onPressed: () async{
-                      File img = await ImagePicker.pickImage(source: ImageSource.gallery);
-                      if(img.path.isNotEmpty && items.length >= 3){
-                        if(items[2] is InfoItem){
-                          items.removeLast();
-                        }
-                        setState(() {
-                          image_preview_path = img.path;
-                          items.add(PhotoItem(img.path));
-                          start_task_visibility = true;
-                        });
-                      }
-                    },
+                    onPressed: onPickImageFromGalleryPressed,
                     child: getButtonColumn(Icons.file_upload, item.text)
                 );
               }
@@ -307,11 +280,57 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
     }
     return imagesWidgets;
   }
+  
+  onPickImageFromGalleryPressed() async {
+    ImagePickerHelper.getPathOfPickedImageFromGallery().then((path) {
+      if(path.isNotEmpty && items.length >= 3){
+        if(items[2] is InfoItem){
+          items.removeLast();
+        }
+        setState(() {
+          image_preview_path = path;
+          items.add(PhotoItem(path));
+          start_task_visibility = true;
+        });
+      }
+    });
+      /*await ImagePicker.pickImage(source: ImageSource.gallery).then((img){
+        if(img.path.isNotEmpty && items.length >= 3){
+          if(items[2] is InfoItem){
+            items.removeLast();
+          }
+          setState(() {
+            image_preview_path = img.path;
+            items.add(PhotoItem(img.path));
+            start_task_visibility = true;
+          });
+        }
+      });*/
+  }
+
+  onPickImageFromCameraPressed() async {
+    File img = await ImagePicker.pickImage(source: ImageSource.camera);
+    final dir = await getApplicationDocumentsDirectory();
+    final path = dir.path;
+    final timestamp = DateTime.now().millisecondsSinceEpoch;
+    final timestampString = timestamp.toString();
+    File newImg = await img.copy("$path/$timestampString.jpg");
+    if(newImg.path.isNotEmpty && items.length >= 3){
+      if(items[2] is InfoItem){
+        items.removeLast();
+      }
+      setState(() {
+        image_preview_path = newImg.path;
+        items.add(PhotoItem(newImg.path));
+        start_task_visibility = true;
+      });
+    }
+  }
 
   onStartTaskPressed() async {
     controller.forward();
 
-    final photoPaths = getImagePathsList(items);
+    final photoPaths = ListItem.getPhotosPathsList(items);
 
     String stringResponse = await RecognitionApi().postTask(photoPaths).catchError((Object error){
       setState(() {
@@ -353,21 +372,15 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
     ));
   }
 
-  changePreviewImage(String path){
-    image_preview_path = path;
-  }
-
-  List<String> getImagePathsList(List<ListItem> items){
-    List <String> photoPaths = [];
-    for(ListItem li in items){
-      if(li is PhotoItem){
-        photoPaths.add(li.path);
-      }
-    }
-    return photoPaths;
-  }
-
   @override
   // TODO: implement wantKeepAlive
   bool get wantKeepAlive => false;
+}
+
+class ImagePickerHelper{
+  static Future<String> getPathOfPickedImageFromGallery() async{
+    return await ImagePicker.pickImage(source: ImageSource.gallery).then((f) {
+      return f.path;
+    });
+  }
 }

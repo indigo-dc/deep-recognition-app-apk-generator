@@ -1,4 +1,16 @@
-abstract class ListItem{}
+abstract class ListItem{
+
+  static getPhotosPathsList(List<ListItem> items){
+    List <String> photoPaths = [];
+    for(ListItem li in items){
+      if(li is PhotoItem){
+        photoPaths.add(li.path);
+      }
+    }
+    return photoPaths;
+  }
+
+}
 
 class ButtonItem implements ListItem {
   final String text;

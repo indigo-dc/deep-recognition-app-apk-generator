@@ -101,7 +101,7 @@ class HistoryPageState extends State<HistoryPage> with AutomaticKeepAliveClientM
                       width: double.infinity,
                       padding: EdgeInsets.all(5.0),
                       child: Text(
-                        getTaskTitleString(tasks[index].results.predictions[0]),
+                        PredictionTitleManager.getTitleForPrediction(tasks[index].results.predictions[0]),
                         style: TextStyle(
                             color: Colors.white
                         ),
@@ -122,16 +122,25 @@ class HistoryPageState extends State<HistoryPage> with AutomaticKeepAliveClientM
     return tasks;
   }
 
-  String getTaskTitleString(Prediction prediction){
+  /*String getTaskTitleString(Prediction prediction){
+    if(prediction.probability < 0.3){
+      return prediction.label + " (!)";
+    }else{
+      return prediction.label;
+    }
+  }*/
+
+  @override
+  bool get wantKeepAlive => false;
+
+}
+
+class PredictionTitleManager{
+  static String getTitleForPrediction(Prediction prediction){
     if(prediction.probability < 0.3){
       return prediction.label + " (!)";
     }else{
       return prediction.label;
     }
   }
-
-  @override
-  // TODO: implement wantKeepAlive
-  bool get wantKeepAlive => false;
-
 }
