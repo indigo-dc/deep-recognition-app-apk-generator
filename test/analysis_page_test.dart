@@ -1,4 +1,5 @@
 import 'package:deep_app/analysis/analysis_page.dart';
+import 'package:deep_app/analysis/task.dart';
 import 'package:deep_app/app/recognition_app.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -14,20 +15,23 @@ void main() {
     );
   }
 
-  testWidgets('Analysis page test', (WidgetTester tester) async {
+  testWidgets('Pick image from gallery test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
 
     MockImagePicker mockImagePicker = MockImagePicker();
+    when(mockImagePicker.getPathOfPickedImage(ImageSource.gallery)).thenAnswer((invocation) => Future.value('test path'));
 
-    AnalysisPage page = AnalysisPage(onPush: null);
+    AnalysisPage page = AnalysisPage(onPush: (task) {}, imagePickerHelper: mockImagePicker);
+
     await tester.pumpWidget(makeTestableWidget(child: page));
 
     await tester.tap(find.byKey(Key('galleryButton')));
 
-    
-    //await tester.pumpWidget(widget)
+    verify(mockImagePicker.getPathOfPickedImage(ImageSource.gallery));
 
-    //expect(find.byType(type))
+    //tester.pumpAndSettle();
+
+    expect(find.byKey(Key("startTaskIcon")), findsOneWidget);
 
     // Verify that our counter starts at 0.
     /*expect(find.text('0'), findsOneWidget);

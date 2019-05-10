@@ -11,8 +11,9 @@ import 'package:photo_view/photo_view.dart';
 import 'package:deep_app/api/recognition_api.dart';
 
 class AnalysisPage extends StatefulWidget {
-  AnalysisPage({this.onPush});
+  AnalysisPage({this.onPush, this.imagePickerHelper });
   final ValueChanged<Task> onPush;
+  final ImagePickerHelper imagePickerHelper;
 
   @override
   State<StatefulWidget> createState() {
@@ -28,6 +29,8 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
   String image_preview_path;
   List<ListItem> items;
   bool start_task_visibility;
+
+  ImagePickerHelper imagePickerHelper;
 
 
   @override
@@ -65,6 +68,7 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
                 icon: Icon(
                   Icons.play_arrow,
                   size: 35.0,
+                  key: Key("startTaskIcon"),
                 )
             ),
           )
@@ -282,7 +286,11 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
   }
   
   onPickImageFromGalleryPressed() async {
-    ImagePickerHelper.getPathOfPickedImageFromGallery().then((path) {
+    //widget.imagePickerHelper = ImagePickerHelper();
+    try{
+      final path = await widget.imagePickerHelper.getPathOfPickedImage(ImageSource.gallery);
+      print('Picked image path: $path');
+
       if(path.isNotEmpty && items.length >= 3){
         if(items[2] is InfoItem){
           items.removeLast();
@@ -293,7 +301,9 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
           start_task_visibility = true;
         });
       }
-    });
+    }catch(e) {
+      print('Error: $e');
+    }
       /*await ImagePicker.pickImage(source: ImageSource.gallery).then((img){
         if(img.path.isNotEmpty && items.length >= 3){
           if(items[2] is InfoItem){
@@ -378,9 +388,8 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
 }
 
 class ImagePickerHelper{
-  static Future<String> getPathOfPickedImageFromGallery() async{
-    return await ImagePicker.pickImage(source: ImageSource.gallery).then((f) {
-      return f.path;
-    });
+  Future<String> getPathOfPickedImage(ImageSource imageSource) async {
+    final File file =  await ImagePicker.pickImage(source: imageSource);
+    return file?.path;
   }
 }

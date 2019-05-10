@@ -33,6 +33,7 @@ class TabNavigator extends StatelessWidget {
     final analysisMap = {
       TabNavigatorRoutes.root: (context) => AnalysisPage(
         onPush: (task) => _push(context, task: task),
+        imagePickerHelper: ImagePickerHelper(),
       ),
       TabNavigatorRoutes.results: (context) => ResultPage(
         task: task,
