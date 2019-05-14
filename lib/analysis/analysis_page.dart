@@ -289,7 +289,7 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
     //widget.imagePickerHelper = ImagePickerHelper();
     try{
       final path = await widget.imagePickerHelper.getPathOfPickedImage(ImageSource.gallery);
-      print('Picked image path: $path');
+      //print('Picked image path: $path');
 
       if(path.isNotEmpty && items.length >= 3){
         if(items[2] is InfoItem){
