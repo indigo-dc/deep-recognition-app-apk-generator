@@ -11,9 +11,10 @@ import 'package:photo_view/photo_view.dart';
 import 'package:deep_app/api/recognition_api.dart';
 
 class AnalysisPage extends StatefulWidget {
-  AnalysisPage({this.onPush, this.imagePickerHelper });
+  AnalysisPage({this.onPush, this.imagePickerHelper, this.fileManager});
   final ValueChanged<Task> onPush;
   final ImagePickerHelper imagePickerHelper;
+  final FileManager fileManager;
 
   @override
   State<StatefulWidget> createState() {
@@ -31,6 +32,7 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
   bool start_task_visibility;
 
   ImagePickerHelper imagePickerHelper;
+  FileManager fileManager;
 
 
   @override
@@ -286,7 +288,6 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
   }
   
   onPickImageFromGalleryPressed() async {
-    //widget.imagePickerHelper = ImagePickerHelper();
     try{
       final path = await widget.imagePickerHelper.getPathOfPickedImage(ImageSource.gallery);
       //print('Picked image path: $path');
@@ -304,36 +305,26 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
     }catch(e) {
       print('Error: $e');
     }
-      /*await ImagePicker.pickImage(source: ImageSource.gallery).then((img){
-        if(img.path.isNotEmpty && items.length >= 3){
-          if(items[2] is InfoItem){
-            items.removeLast();
-          }
-          setState(() {
-            image_preview_path = img.path;
-            items.add(PhotoItem(img.path));
-            start_task_visibility = true;
-          });
-        }
-      });*/
   }
 
   onPickImageFromCameraPressed() async {
-    File img = await ImagePicker.pickImage(source: ImageSource.camera);
-    final dir = await getApplicationDocumentsDirectory();
-    final path = dir.path;
-    final timestamp = DateTime.now().millisecondsSinceEpoch;
-    final timestampString = timestamp.toString();
-    File newImg = await img.copy("$path/$timestampString.jpg");
-    if(newImg.path.isNotEmpty && items.length >= 3){
-      if(items[2] is InfoItem){
-        items.removeLast();
+    try{
+      final path = await widget.imagePickerHelper.getPathOfPickedImage(ImageSource.camera);
+      //File path = await ImagePicker.pickImage(source: ImageSource.gallery);
+      final newPath = await widget.fileManager.copyFileAndGetPath(path);
+
+      if(newPath.isNotEmpty && items.length >= 3){
+        if(items[2] is InfoItem){
+          items.removeLast();
+        }
+        setState(() {
+          image_preview_path = newPath;
+          items.add(PhotoItem(newPath));
+          start_task_visibility = true;
+        });
       }
-      setState(() {
-        image_preview_path = newImg.path;
-        items.add(PhotoItem(newImg.path));
-        start_task_visibility = true;
-      });
+    }catch(e){
+      print('Error: $e');
     }
   }
 
@@ -391,5 +382,16 @@ class ImagePickerHelper{
   Future<String> getPathOfPickedImage(ImageSource imageSource) async {
     final File file =  await ImagePicker.pickImage(source: imageSource);
     return file?.path;
+  }
+}
+
+class FileManager{
+  Future<String> copyFileAndGetPath(String path) async {
+    final dir = await getApplicationDocumentsDirectory();
+    final dirPath = dir.path;
+    final timestamp = DateTime.now().millisecondsSinceEpoch;
+    final timestampString = timestamp.toString();
+    File newImg = await File(path).copy("$dirPath/$timestampString.jpg");
+    return newImg?.path;
   }
 }
