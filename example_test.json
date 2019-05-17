@@ -1,12 +1,12 @@
 {
-	"app_name" : "Plant Recognition",
-	"main_activity_label" : "Plant Recognition",
+	"app_name" : "TEST NAME",
+	"main_activity_label" : "TEST LABEL",
 	"main_activity_image_url" : "https://box.psnc.pl/f/66825f249b/?raw=1",
 	"api_root_url" : "http://ribes-230.man.poznan.pl:443/",
 	"api_post_endpoint" : "models/plant_classification/predict",
-	"primary_color" : "#4CAF50",
-	"primary_dark_color" : "#388E3C",
-	"accent_color" : "#CDDC39",
+	"primary_color" : "#8cadac",
+	"primary_dark_color" : "#255059",
+	"accent_color" : "#441975",
 	"version_name" : "1.1",
 	"icon_image_url" : "https://box.psnc.pl/f/6da9c7cffc/?raw=1"
 }

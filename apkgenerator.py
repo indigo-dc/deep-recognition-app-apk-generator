@@ -3,36 +3,53 @@ import os
 import json
 import re
 import importlib
+import shutil
 
 APP_CONSTANTS_PATH = '/lib/utils/constants.dart'
-PREVIEW_IMAGE_PATH = '/assets/images/plant.png'
+ANDROID_MANIFEST_PATH = '/android/app/src/main/AndroidManifest.xml'
+ANDROID_APP_BUILD_GRADLE_PATH = '/android/app/build.gradle'
 
-DOWNLOADED_MAIN_ACTIVITY_IMAGE_PATH = "/plant.png"
-DOWNLOADED_ICON_PATH = "/ic-launcher-web.png"
+PREVIEW_IMAGE_PATH = '/assets/images/plant.png'
+DOWNLOADED_MAIN_ACTIVITY_IMAGE_PATH = '/plant.png'
+DOWNLOADED_ICON_PATH = '/ic-launcher-web.png'
+ANDROID_ICON_LAUNCHER_MDPI_PATH = '/android/app/src/main/res/mipmap-mdpi/ic_launcher_foreground.png'
+ANDROID_ICON_LAUNCHER_HDPI_PATH = '/android/app/src/main/res/mipmap-hdpi/ic_launcher_foreground.png'
+ANDROID_ICON_LAUNCHER_XHDPI_PATH = '/android/app/src/main/res/mipmap-xhdpi/ic_launcher_foreground.png'
+ANDROID_ICON_LAUNCHER_XXHDPI_PATH = '/android/app/src/main/res/mipmap-xxhdpi/ic_launcher_foreground.png'
+ANDROID_ICON_LAUNCHER_XXXHDPI_PATH = '/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_foreground.png'
+PREVIEW_IMAGE_PATH = '/assets/images/plant.png'
+ICON_PATH = '/assets/images/ic-launcher-web.png'
+
 
 PREVIEW_IMAGE_RESOLUTION = 960
 ICON_IMAGE_RESOLUTION = 512
+ANDROID_ICON_LAUNCHER_MDPI_RESOLUTION = 48
+ANDROID_ICON_LAUNCHER_HDPI_RESOLUTION = 72
+ANDROID_ICON_LAUNCHER_XHDPI_RESOLUTION = 96
+ANDROID_ICON_LAUNCHER_XXHDPI_RESOLUTION = 144
+ANDROID_ICON_LAUNCHER_XXXHDPI_RESOLUTION = 192
+
 
 def isColor(color):
 	string = re.findall('^#[0-9,a-f,A-F]{6}$', color)
 	if not string:
-		print("Wrong color code: " + color)
+		print('Wrong color code: ' + color)
 		return False
 	else:
 		return True
 
 def isImage(url):
 	r = requests.get(url, allow_redirects=True)
-	if(r.headers.get('content-type') == "image/png"):
+	if(r.headers.get('content-type') == 'image/png'):
 		return True
 	else:
-		print("Wrong image url: " + url)
+		print('Wrong image url: ' + url)
 		return False
 
 def isUrl(url):
 	string = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\), ]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', url)
 	if not string:
-		print("Wrong url: " + url)
+		print('Wrong url: ' + url)
 		return False
 	else:
 		return True
@@ -40,10 +57,10 @@ def isUrl(url):
 def downloadFile(url, file_path):
 	try:
 		r = requests.get(url, allow_redirects=True)
-		open(file_path, "wb").write(r.content)
+		open(file_path, 'wb').write(r.content)
 		return True
 	except Exception as e:
-		print("File not downloaded from: " + url)
+		print('File not downloaded from: ' + url)
 		return False
 
 def isImageResolutionCorrect(file_path, expected_width, expected_height):
@@ -52,7 +69,7 @@ def isImageResolutionCorrect(file_path, expected_width, expected_height):
 	if image.size == (expected_width, expected_height):
 		return True
 	else:
-		print("Wrong resolution of image " + file_path)
+		print('Wrong resolution of image ' + file_path)
 		print(image.size)
 		return False
 
@@ -62,6 +79,28 @@ def replaceLine(file_path, regex, new_content_regex):
 		content_new = re.sub(regex, new_content_regex, content, flags = re.M)
 	with open (file_path, "w") as f:
 		f.write(content_new)
+
+def getIntegerValueFromFile(file, regex):
+	with open (file, 'r' ) as f:
+		content = f.read()
+	string = re.findall(regex, content)
+	if string:
+		num_string = re.findall("[0-9]+", string[0])
+		if num_string:
+			return int(num_string[0])
+		else:
+			return 0
+	else:
+		return 
+
+def resizeAndMoveImage(file_path, new_file_path, width, height):
+	with open(file_path, 'r+b') as f:
+		with Image.open(f) as image:
+			cover = resizeimage.resize_cover(image, [width, height])
+			cover.save(new_file_path, image.format)
+
+def moveFile(file_path, new_file_path):
+	shutil.move(file_path, new_file_path)
 
 def importModule(module_name):
 	try:
@@ -115,24 +154,43 @@ def replaceData(dir, json_file_path):
 		with open(json_file_path) as json_file:
 			data = json.load(json_file)
 
-			if not (isUrl(data['main_activity_image_url']) and isUrl(data["api_root_url"]) and isImage(data["main_activity_image_url"]) and 
-				isUrl(data["icon_image_url"]) and isColor(data["primary_color"]) and isColor(data["primary_dark_color"]) and isColor(data["accent_color"])):
+			if not (isUrl(data['main_activity_image_url']) and isUrl(data['api_root_url']) and isImage(data['main_activity_image_url']) and 
+				isUrl(data['icon_image_url']) and isColor(data['primary_color']) and isColor(data['primary_dark_color']) and isColor(data['accent_color'])):
 				return False
 
-			if not (downloadFile(data['main_activity_image_url'], dir + DOWNLOADED_MAIN_ACTIVITY_IMAGE_PATH) and downloadFile(data["icon_image_url"], dir + DOWNLOADED_ICON_PATH)):
+			if not (downloadFile(data['main_activity_image_url'], dir + DOWNLOADED_MAIN_ACTIVITY_IMAGE_PATH) and downloadFile(data['icon_image_url'], dir + DOWNLOADED_ICON_PATH)):
 				return False
 
 			if not (isImageResolutionCorrect(dir + DOWNLOADED_MAIN_ACTIVITY_IMAGE_PATH, PREVIEW_IMAGE_RESOLUTION, PREVIEW_IMAGE_RESOLUTION) and isImageResolutionCorrect(dir + DOWNLOADED_ICON_PATH, ICON_IMAGE_RESOLUTION, ICON_IMAGE_RESOLUTION)):
 				return
 
-			replaceLine(dir + STRINGS_PATH, "app_name\">(.+)</string>", "app_name\">" + app_name + "</string>")
-			replaceLine(dir + STRINGS_PATH, "main.activity.label\">(.+)</string>", "main.activity.label\">" + main_activity_label + "</string>")
-			replaceLine(dir + APP_PARAMETERS_PATH, "API_ROOT = \"(.+)\";", "API_ROOT = \"" + api_root_url + "\";")
-			replaceLine(dir + APP_PARAMETERS_PATH, "API_POST_ENDPOINT = \"(.+)\";", "API_POST_ENDPOINT = \"" + api_post_endpoint + "\";")
-			replaceLine(dir + COLORS_PATH, "primary\">(.+)</color>", "primary\">" + primary_color + "</color>")
-			replaceLine(dir + COLORS_PATH, "primary_dark\">(.+)</color>", "primary_dark\">" + primary_dark_color + "</color>")
-			replaceLine(dir + COLORS_PATH, "accent\">(.+)</color>", "accent\">" + accent_color + "</color>")
-			replaceLine(dir + APP_BUILD_GRADLE_PATH, "versionName \"(.+)\"", "versionName \"" + version_name + "\"")
+			replaceLine(dir + ANDROID_MANIFEST_PATH, 'android:label=\"(.+)\"', 'android:label=\"' + data['app_name'] + '\"')
+			replaceLine(dir + APP_CONSTANTS_PATH, 'app_label = \"(.+)\";', 'app_label = \"' + data['main_activity_label'] + '\";')
+			replaceLine(dir + APP_CONSTANTS_PATH, 'api_url = \"(.+)\";', 'api_url = \"' + data['api_root_url'] + '\";')
+			replaceLine(dir + APP_CONSTANTS_PATH, 'post_endpoint = \"(.+)\";', 'post_endpoint = \"' + data["api_post_endpoint"] + '\";')
+
+
+			replaceLine(dir + APP_CONSTANTS_PATH, 'primary_color = Color\(0xFF([0-9,A-F,a-f]*)\);', 'primary_color = Color(0xFF' + data["primary_color"][-6:] + ');')
+
+			replaceLine(dir + APP_CONSTANTS_PATH, 'primary_dark_color = Color\(0xFF([0-9,A-F,a-f]*)\);', 'primary_dark_color = Color(0xFF' + data["primary_dark_color"][-6:] + ');')
+
+			replaceLine(dir + APP_CONSTANTS_PATH, 'accent_color = Color\(0xFF([0-9,A-F,a-f]*)\);', 'accent_color = Color(0xFF' + data["accent_color"][-6:] + ');')
+
+			replaceLine(dir + ANDROID_APP_BUILD_GRADLE_PATH, 'flutterVersionName = \'(.+)\'', 'flutterVersionName = \'' + data['version_name'] + '\'')
+
+			version_code = getIntegerValueFromFile(dir + ANDROID_APP_BUILD_GRADLE_PATH, "flutterVersionCode = \'[0-9]+\'")
+			if(version_code > 0):
+				version_code += 1
+				replaceLine(dir + ANDROID_APP_BUILD_GRADLE_PATH, "flutterVersionCode = \'[0-9]+\'", "flutterVersionCode = \'" + str(version_code) + "\'")
+
+			resizeAndMoveImage(dir + DOWNLOADED_ICON_PATH, dir + ANDROID_ICON_LAUNCHER_MDPI_PATH, ANDROID_ICON_LAUNCHER_MDPI_RESOLUTION, ANDROID_ICON_LAUNCHER_MDPI_RESOLUTION)
+			resizeAndMoveImage(dir + DOWNLOADED_ICON_PATH, dir + ANDROID_ICON_LAUNCHER_HDPI_PATH, ANDROID_ICON_LAUNCHER_HDPI_RESOLUTION, ANDROID_ICON_LAUNCHER_HDPI_RESOLUTION)
+			resizeAndMoveImage(dir + DOWNLOADED_ICON_PATH, dir + ANDROID_ICON_LAUNCHER_XHDPI_PATH, ANDROID_ICON_LAUNCHER_XHDPI_RESOLUTION, ANDROID_ICON_LAUNCHER_XHDPI_RESOLUTION)
+			resizeAndMoveImage(dir + DOWNLOADED_ICON_PATH, dir + ANDROID_ICON_LAUNCHER_XXHDPI_PATH, ANDROID_ICON_LAUNCHER_XXHDPI_RESOLUTION, ANDROID_ICON_LAUNCHER_XXHDPI_RESOLUTION)
+			resizeAndMoveImage(dir + DOWNLOADED_ICON_PATH, dir + ANDROID_ICON_LAUNCHER_XXXHDPI_PATH, ANDROID_ICON_LAUNCHER_XXXHDPI_RESOLUTION, ANDROID_ICON_LAUNCHER_XXXHDPI_RESOLUTION)
+
+			moveFile(dir + DOWNLOADED_MAIN_ACTIVITY_IMAGE_PATH, dir + PREVIEW_IMAGE_PATH)
+			moveFile(dir + DOWNLOADED_ICON_PATH, dir + ICON_PATH)
 
 			return True
 	except Exception as e:
@@ -144,6 +202,12 @@ def main():
 	if not importModule("requests"):
 		if installPackage("requests"):
 			importModule("requests")
+		else:
+			exit()
+
+	if not importModuleFrom("resizeimage", "resizeimage"):
+		if installPackage("python-resize-image"):
+			importModuleFrom("resizeimage", "resizeimage")
 		else:
 			exit()
 
