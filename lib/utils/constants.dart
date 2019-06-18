@@ -9,8 +9,10 @@ class AppStrings {
   static String camera = "CAMERA";
   static String file = "FILE";
   static String select_photo_info = "Select at least one photo";
-  static String api_url = "http://ribes-230.man.poznan.pl:443/";
-  static String post_endpoint = "models/plant_classification/predict";
+  static String api_url = "https://deepaas.cloud.ifca.es/api/v1/web/deepaas/deep-oc/deep-oc-plants-classification-tf/";
+  static String post_endpoint = "models/imgclas/predict";
+  //static String api_url = "http://ribes-230.man.poznan.pl:443/";
+  //static String post_endpoint = "models/plant_classification/predict";
   static String delete_alert_content = "The image will be deleted. Are you sure?";
   static String no = "NO";
   static String yes = "YES";

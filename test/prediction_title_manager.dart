@@ -8,16 +8,10 @@ void main() {
   test('Low probability test', () {
     Prediction prediction = Prediction(
         info: Info(
-            links: [
-              Link(
-                  url: "https://www.google.es/search?q=Anethum+graveolens&tbm=isch",
-                  link: "Google images"
-              ),
-              Link(
-                  url: "https://en.wikipedia.org/wiki/Anethum_graveolens",
-                  link: "Wikipedia"
-              )
-            ],
+            links: Links(
+                wikipedia: "https://www.google.es/search?q=Anethum+graveolens&tbm=isch",
+                google_images: "https://en.wikipedia.org/wiki/Anethum_graveolens"
+            ),
             metadata: ""
         ),
         label_id: 999,
@@ -33,16 +27,10 @@ void main() {
   test('High probability test', () {
     Prediction prediction = Prediction(
         info: Info(
-            links: [
-              Link(
-                  url: "https://www.google.es/search?q=Anethum+graveolens&tbm=isch",
-                  link: "Google images"
-              ),
-              Link(
-                  url: "https://en.wikipedia.org/wiki/Anethum_graveolens",
-                  link: "Wikipedia"
-              )
-            ],
+            links: Links(
+                wikipedia: "https://www.google.es/search?q=Anethum+graveolens&tbm=isch",
+                google_images: "https://en.wikipedia.org/wiki/Anethum_graveolens"
+            ),
             metadata: ""
         ),
         label_id: 999,

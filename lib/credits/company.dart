@@ -13,8 +13,8 @@ class Company{
           "http://conference4me.psnc.pl/wordpress-static/lifewatch/ifca.png"),
       Company("PSNC", "http://www.man.poznan.pl/online/en/", "Mobile apps development",
           "http://conference4me.psnc.pl/wordpress-static/lifewatch/psnc.png"),
-      Company("INDIGO DataCloud", "https://www.indigo-datacloud.eu/", "Project H2020",
-          "http://conference4me.psnc.pl/wordpress-static/lifewatch/indigo.png")
+      Company("DEEP DataCloud", "https://deep-hybrid-datacloud.eu/", "Project H2020",
+          "http://conference4me.psnc.pl/wordpress-static/lifewatch/logo-deep-r.png")
     ];
   }
 }

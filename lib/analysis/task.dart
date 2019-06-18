@@ -68,44 +68,44 @@ class Prediction{
 }
 
 class Info{
-  final List<Link> links;
   final String metadata;
+  final Links links;
 
-  Info({this.links, this.metadata});
+  Info({this.metadata, this.links});
 
   factory Info.fromJson(Map<String, dynamic> json) {
-    var list = json["links"] as List;
-    List<Link> links = list.map((i) =>
-    Link.fromJson(i)).toList();
+    //var list = json["links"] as List;
+    //List<Links> links = list.map((i) =>
+    //Links.fromJson(i)).toList();
     return Info(
-      links: links,
-      metadata: json["metadata"]
+        metadata: json["metadata"],
+        links: Links.fromJson(json["links"]),
     );
   }
 
   Map<String, dynamic> toJson() =>
       {
-        "links": links.map((l) => l.toJson()).toList(), "metadata": metadata
+        "metadata": metadata, "links": links.toJson()
       };
 
 }
 
-class Link{
-  final String url;
-  final String link;
+class Links{
+  final String wikipedia;
+  final String google_images;
 
-  Link({this.url, this.link});
+  Links({this.wikipedia, this.google_images});
 
-  factory Link.fromJson(Map<String, dynamic> json) {
-    return Link(
-      url: json["url"],
-      link: json["link"]
+  factory Links.fromJson(Map<String, dynamic> json) {
+    return Links(
+      wikipedia: json["Wikipedia"],
+      google_images: json["Google images"]
     );
   }
 
   Map<String, dynamic> toJson() =>
       {
-        "url": url, "link": link
+         "Wikipedia": wikipedia, "Google images": google_images,
       };
 
 }

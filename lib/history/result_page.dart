@@ -130,7 +130,7 @@ class ResultPage extends StatelessWidget {
                                     GestureDetector(
                                       onTap: () {
                                         //print("Tapped info icon");
-                                        _launchURL(item.info.links[1].url);
+                                        _launchURL(item.info.links.wikipedia);
                                       },
                                       child: Icon(
                                         Icons.info,
