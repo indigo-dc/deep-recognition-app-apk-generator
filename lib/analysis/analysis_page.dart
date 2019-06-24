@@ -1,7 +1,9 @@
+import 'package:deep_app/utils/file_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:deep_app/utils/constants.dart';
 import 'package:deep_app/analysis/list_item.dart';
 import 'package:deep_app/analysis/task.dart';
+//import 'package:image/image.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'dart:convert';
@@ -9,12 +11,13 @@ import 'package:deep_app/history/history_repository.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:deep_app/api/recognition_api.dart';
+import 'package:flutter_native_image/flutter_native_image.dart';
 
 class AnalysisPage extends StatefulWidget {
-  AnalysisPage({this.onPush, this.imagePickerHelper, this.fileManager});
+  AnalysisPage({this.onPush, this.imagePickerHelper});
   final ValueChanged<Task> onPush;
   final ImagePickerHelper imagePickerHelper;
-  final FileManager fileManager;
+
 
   @override
   State<StatefulWidget> createState() {
@@ -32,7 +35,7 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
   bool start_task_visibility;
 
   ImagePickerHelper imagePickerHelper;
-  FileManager fileManager;
+  //FileManager fileManager;
 
 
   @override
@@ -291,14 +294,27 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
     try{
       final path = await widget.imagePickerHelper.getPathOfPickedImage(ImageSource.gallery);
       //print('Picked image path: $path');
+      final newPath = await FileManager.copyFileAndGetPath(path);
 
-      if(path.isNotEmpty && items.length >= 3){
+      ImageProperties properties = await FlutterNativeImage.getImageProperties(newPath);
+      print("Analysis page: " + properties.width.toString());
+
+      var imagePath;
+
+      if(properties.width > 2000 && properties.height > 2000){
+        File compressedFile = await FlutterNativeImage.compressImage(newPath, quality: 90);
+        imagePath = compressedFile.path;
+      }else{
+        imagePath = newPath;
+      }
+
+      if(imagePath.isNotEmpty && items.length >= 3){
         if(items[2] is InfoItem){
           items.removeLast();
         }
         setState(() {
-          image_preview_path = path;
-          items.add(PhotoItem(path));
+          image_preview_path = imagePath;
+          items.add(PhotoItem(imagePath));
           start_task_visibility = true;
         });
       }
@@ -310,16 +326,29 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
   onPickImageFromCameraPressed() async {
     try{
       final path = await widget.imagePickerHelper.getPathOfPickedImage(ImageSource.camera);
-      //File path = await ImagePicker.pickImage(source: ImageSource.gallery);
-      final newPath = await widget.fileManager.copyFileAndGetPath(path);
 
-      if(newPath.isNotEmpty && items.length >= 3){
+      final newPath = await FileManager.copyFileAndGetPath(path);
+
+      ImageProperties properties = await FlutterNativeImage.getImageProperties(newPath);
+      print("Analysis page: " + properties.width.toString());
+
+      var imagePath;
+
+      if(properties.width > 2000 && properties.height > 2000){
+        File compressedFile = await FlutterNativeImage.compressImage(newPath, quality: 90);
+        imagePath = compressedFile.path;
+      }else{
+        imagePath = newPath;
+      }
+
+
+      if(imagePath.isNotEmpty && items.length >= 3){
         if(items[2] is InfoItem){
           items.removeLast();
         }
         setState(() {
-          image_preview_path = newPath;
-          items.add(PhotoItem(newPath));
+          image_preview_path = imagePath;
+          items.add(PhotoItem(imagePath));
           start_task_visibility = true;
         });
       }
@@ -383,9 +412,10 @@ class ImagePickerHelper{
     final File file =  await ImagePicker.pickImage(source: imageSource);
     return file?.path;
   }
+
 }
 
-class FileManager{
+/*class FileManager{
   Future<String> copyFileAndGetPath(String path) async {
     final dir = await getApplicationDocumentsDirectory();
     final dirPath = dir.path;
@@ -394,4 +424,4 @@ class FileManager{
     File newImg = await File(path).copy("$dirPath/$timestampString.jpg");
     return newImg?.path;
   }
-}
+}*/
