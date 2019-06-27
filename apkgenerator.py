@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import sys
 import os
 import json
@@ -149,6 +151,26 @@ def androidFilesExists(dir):
 		print('Wrong flutter project path')
 		return False
 
+def isJavaInstalled():
+	if os.system('java -version') != 0:
+		return False
+	else:
+		return True
+
+def isAndroidPathSet():
+	if os.environ.get('ANDROID_HOME') is None:
+		print('ANDROID_HOME not set')
+		return False
+	else:
+		return True
+
+def isFlutterInPath():
+	if os.system('echo $PATH | grep -q flutter') != 0:
+		return True
+	else:
+		print("Not found flutter in variable PATH")
+		False
+
 def replaceData(dir, json_file_path):
 	try:
 		with open(json_file_path) as json_file:
@@ -221,8 +243,14 @@ def main():
 		exit()
 	if not androidFilesExists(sys.argv[1]):
 		exit()
-	if not replaceData(sys.argv[1], sys.argv[2]):
+	#if not isJavaInstalled():
+	#	exit()
+	#if not isAndroidPathSet():
+	#	exit()
+	if not isFlutterInPath():
 		exit()
+	#if not replaceData(sys.argv[1], sys.argv[2]):
+	#	exit()
 
 
 if __name__ == '__main__':
