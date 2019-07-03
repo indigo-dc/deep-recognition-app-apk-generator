@@ -6,6 +6,7 @@ import json
 import re
 import importlib
 import shutil
+import subprocess
 
 APP_CONSTANTS_PATH = '/lib/utils/constants.dart'
 ANDROID_MANIFEST_PATH = '/android/app/src/main/AndroidManifest.xml'
@@ -165,11 +166,13 @@ def isAndroidPathSet():
 		return True
 
 def isFlutterInPath():
-	if os.system('echo $PATH | grep -q flutter') != 0:
+	try:
+		output = subprocess.check_output("echo $PATH | grep -q flutter && echo directory exists", shell = True)
+		print('Flutter Path found')
 		return True
-	else:
-		print("Not found flutter in variable PATH")
-		False
+	except subprocess.CalledProcessError as e:
+		print('Flutter not found in PATH')
+		return False
 
 def replaceData(dir, json_file_path):
 	try:
@@ -219,6 +222,12 @@ def replaceData(dir, json_file_path):
 		print(e)
 		return False
 
+def buildProject():
+	try:	
+		result = subprocess.run(['flutter', 'build', 'apk'], stdout=subprocess.PIPE).stdout.decode('utf-8')
+		print("Output: " + result)
+	except:
+		print("Error while building app")
 
 def main():
 	if not importModule("requests"):
@@ -243,14 +252,15 @@ def main():
 		exit()
 	if not androidFilesExists(sys.argv[1]):
 		exit()
-	#if not isJavaInstalled():
-	#	exit()
-	#if not isAndroidPathSet():
-	#	exit()
+	if not isJavaInstalled():
+		exit()
+	if not isAndroidPathSet():
+		exit()
 	if not isFlutterInPath():
 		exit()
-	#if not replaceData(sys.argv[1], sys.argv[2]):
-	#	exit()
+	if not replaceData(sys.argv[1], sys.argv[2]):
+		exit()
+	buildProject()
 
 
 if __name__ == '__main__':
