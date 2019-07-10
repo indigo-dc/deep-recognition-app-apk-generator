@@ -7,6 +7,7 @@ import re
 import importlib
 import shutil
 import subprocess
+import asyncio
 
 APP_CONSTANTS_PATH = '/lib/utils/constants.dart'
 ANDROID_MANIFEST_PATH = '/android/app/src/main/AndroidManifest.xml'
@@ -108,6 +109,7 @@ def moveFile(file_path, new_file_path):
 def importModule(module_name):
 	try:
 		globals()[module_name] = importlib.import_module(module_name)
+		print("Imported succesfully module " + module_name)
 		return True
 	except Exception as e:
 		#print("Import module error: ")
@@ -116,14 +118,15 @@ def importModule(module_name):
 
 def installPackage(package_name):
 	try:
-		import pip 
+		import pip
 
 		if hasattr(pip, 'main'):
 			from pip import main
 		else:
 			from pip._internal import main
-			
+
 		main(['install', package_name])
+		print("Installed succesfully package " + package_name)
 		return True
 	except Exception as e:
 		print("Install package error: ")
@@ -133,6 +136,7 @@ def installPackage(package_name):
 def importModuleFrom(module_name, parent_module_name):
 	try:
 		globals()[module_name] = importlib.import_module("." + module_name, package = parent_module_name)
+		print("Imported succesfully module " + module_name + " from " + parent_module_name)
 		return True
 	except Exception as e:
 		print(e)
@@ -231,21 +235,30 @@ def buildProject():
 
 def main():
 	if not importModule("requests"):
+		print("Cannot import module requests. Installing package requests")
 		if installPackage("requests"):
+			print("Importing installed module requests")
 			importModule("requests")
 		else:
+			print("Cannot install module requests")
 			exit()
 
 	if not importModuleFrom("resizeimage", "resizeimage"):
+		print("Cannot import module resizeimage from resizeimage. Installing package python-resize-image")
 		if installPackage("python-resize-image"):
+			print("Importing installed module resizeimage from resizeimage")
 			importModuleFrom("resizeimage", "resizeimage")
 		else:
+			print("Cannot install module python-resize-image")
 			exit()
 
 	if not importModuleFrom("Image", "PIL"):
+		print("Cannot import module Image from PIL. Installing package Pillow")
 		if installPackage("Pillow"):
+			print("Importing installed module Image from PIL")
 			importModuleFrom("Image", "PIL")
 		else:
+			print("Cannot install module Pillow")
 			exit()
 
 	if not argsExists(sys.argv):
