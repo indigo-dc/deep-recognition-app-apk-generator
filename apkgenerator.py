@@ -247,19 +247,23 @@ def main():
 		print("Cannot import module resizeimage from resizeimage. Installing package python-resize-image")
 		if installPackage("python-resize-image"):
 			print("Importing installed module resizeimage from resizeimage")
-			importModuleFrom("resizeimage", "resizeimage")
+			if not importModuleFrom("resizeimage", "resizeimage"):
+				exit()
+			if not importModuleFrom("Image", "PIL"):
+				exit()
 		else:
 			print("Cannot install module python-resize-image")
 			exit()
 
-	if not importModuleFrom("Image", "PIL"):
-		print("Cannot import module Image from PIL. Installing package Pillow")
-		if installPackage("Pillow"):
-			print("Importing installed module Image from PIL")
-			importModuleFrom("Image", "PIL")
-		else:
-			print("Cannot install module Pillow")
-			exit()
+	#if not importModuleFrom("Image", "PIL"):
+	#	print("Cannot import module Image from PIL. Installing package Pillow")
+	#	if installPackage("Pillow"):
+	#		print("Importing installed module Image from PIL")
+	#		if not importModuleFrom("Image", "PIL"):
+	#			exit()
+	#	else:
+	#		print("Cannot install module Pillow")
+	#		exit()
 
 	if not argsExists(sys.argv):
 		exit()
