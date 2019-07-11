@@ -243,7 +243,7 @@ def main():
 			print("Cannot install module requests")
 			exit()
 
-	if not importModuleFrom("resizeimage", "resizeimage"):
+	if not importModuleFrom("resizeimage", "resizeimage") or not importModuleFrom("Image", "PIL"):
 		print("Cannot import module resizeimage from resizeimage. Installing package python-resize-image")
 		if installPackage("python-resize-image"):
 			print("Importing installed module resizeimage from resizeimage")
