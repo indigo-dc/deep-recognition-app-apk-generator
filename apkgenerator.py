@@ -109,6 +109,7 @@ def moveFile(file_path, new_file_path):
 def importModule(module_name):
 	try:
 		globals()[module_name] = importlib.import_module(module_name)
+		importlib.invalidate_caches()
 		print("Imported succesfully module " + module_name)
 		return True
 	except Exception as e:
@@ -136,6 +137,7 @@ def installPackage(package_name):
 def importModuleFrom(module_name, parent_module_name):
 	try:
 		globals()[module_name] = importlib.import_module("." + module_name, package = parent_module_name)
+		importlib.invalidate_caches()
 		print("Imported succesfully module " + module_name + " from " + parent_module_name)
 		return True
 	except Exception as e:
@@ -249,6 +251,7 @@ def main():
 			print("Importing installed module resizeimage from resizeimage")
 			if not importModuleFrom("resizeimage", "resizeimage"):
 				exit()
+			print("Importing installed module Image from PIL")
 			if not importModuleFrom("Image", "PIL"):
 				exit()
 		else:
