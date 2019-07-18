@@ -8,6 +8,7 @@ import importlib
 import shutil
 import subprocess
 import asyncio
+import time
 
 APP_CONSTANTS_PATH = '/lib/utils/constants.dart'
 ANDROID_MANIFEST_PATH = '/android/app/src/main/AndroidManifest.xml'
@@ -109,6 +110,7 @@ def moveFile(file_path, new_file_path):
 def importModule(module_name):
 	try:
 		globals()[module_name] = importlib.import_module(module_name)
+		time.sleep(1)
 		importlib.invalidate_caches()
 		print("Imported succesfully module " + module_name)
 		return True
@@ -127,6 +129,7 @@ def installPackage(package_name):
 			from pip._internal import main
 
 		main(['install', package_name])
+		time.sleep(1)
 		print("Installed succesfully package " + package_name)
 		return True
 	except Exception as e:
@@ -137,6 +140,7 @@ def installPackage(package_name):
 def importModuleFrom(module_name, parent_module_name):
 	try:
 		globals()[module_name] = importlib.import_module("." + module_name, package = parent_module_name)
+		time.sleep(1)
 		importlib.invalidate_caches()
 		print("Imported succesfully module " + module_name + " from " + parent_module_name)
 		return True
