@@ -127,7 +127,7 @@ def installPackage(package_name):
 			from pip._internal import main
 
 		main(['install', package_name])
-		importlib.invalidate_caches()
+		time.sleep(1.5)
 		print("Installed succesfully package " + package_name)
 		return True
 	except Exception as e:
