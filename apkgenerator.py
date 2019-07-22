@@ -1,9 +1,14 @@
+#!/usr/bin/python3
+
 import sys
 import os
 import json
 import re
 import importlib
 import shutil
+import subprocess
+import asyncio
+import site
 
 APP_CONSTANTS_PATH = '/lib/utils/constants.dart'
 ANDROID_MANIFEST_PATH = '/android/app/src/main/AndroidManifest.xml'
@@ -104,7 +109,9 @@ def moveFile(file_path, new_file_path):
 
 def importModule(module_name):
 	try:
+		importlib.reload(site)
 		globals()[module_name] = importlib.import_module(module_name)
+		print("Imported succesfully module " + module_name)
 		return True
 	except Exception as e:
 		#print("Import module error: ")
@@ -113,14 +120,15 @@ def importModule(module_name):
 
 def installPackage(package_name):
 	try:
-		import pip 
+		import pip
 
 		if hasattr(pip, 'main'):
 			from pip import main
 		else:
 			from pip._internal import main
-			
+
 		main(['install', package_name])
+		print("Installed succesfully package " + package_name)
 		return True
 	except Exception as e:
 		print("Install package error: ")
@@ -129,7 +137,9 @@ def installPackage(package_name):
 
 def importModuleFrom(module_name, parent_module_name):
 	try:
+		importlib.reload(site)
 		globals()[module_name] = importlib.import_module("." + module_name, package = parent_module_name)
+		print("Imported succesfully module " + module_name + " from " + parent_module_name)
 		return True
 	except Exception as e:
 		print(e)
@@ -147,6 +157,28 @@ def androidFilesExists(dir):
 		return True
 	else:
 		print('Wrong flutter project path')
+		return False
+
+def isJavaInstalled():
+	if os.system('java -version') != 0:
+		return False
+	else:
+		return True
+
+def isAndroidPathSet():
+	if os.environ.get('ANDROID_HOME') is None:
+		print('ANDROID_HOME not set')
+		return False
+	else:
+		return True
+
+def isFlutterInPath():
+	try:
+		output = subprocess.check_output("echo $PATH | grep -q flutter && echo directory exists", shell = True)
+		print('Flutter Path found')
+		return True
+	except subprocess.CalledProcessError as e:
+		print('Flutter not found in PATH')
 		return False
 
 def replaceData(dir, json_file_path):
@@ -197,32 +229,59 @@ def replaceData(dir, json_file_path):
 		print(e)
 		return False
 
+def buildProject():
+	try:	
+		result = subprocess.run(['flutter', 'build', 'apk'], stdout=subprocess.PIPE).stdout.decode('utf-8')
+		print("Output: " + result)
+	except:
+		print("Error while building app")
 
 def main():
 	if not importModule("requests"):
+		print("Cannot import module requests. Installing package requests")
 		if installPackage("requests"):
+			print("Importing installed module requests")
 			importModule("requests")
 		else:
+			print("Cannot install module requests")
 			exit()
 
-	if not importModuleFrom("resizeimage", "resizeimage"):
+	if not importModuleFrom("resizeimage", "resizeimage") or not importModuleFrom("Image", "PIL"):
+		print("Cannot import module resizeimage from resizeimage. Installing package python-resize-image")
 		if installPackage("python-resize-image"):
-			importModuleFrom("resizeimage", "resizeimage")
+			print("Importing installed module resizeimage from resizeimage")
+			if not importModuleFrom("resizeimage", "resizeimage"):
+				exit()
+			print("Importing installed module Image from PIL")
+			if not importModuleFrom("Image", "PIL"):
+				exit()
 		else:
+			print("Cannot install module python-resize-image")
 			exit()
 
-	if not importModuleFrom("Image", "PIL"):
-		if installPackage("Pillow"):
-			importModuleFrom("Image", "PIL")
-		else:
-			exit()
+	#if not importModuleFrom("Image", "PIL"):
+	#	print("Cannot import module Image from PIL. Installing package Pillow")
+	#	if installPackage("Pillow"):
+	#		print("Importing installed module Image from PIL")
+	#		if not importModuleFrom("Image", "PIL"):
+	#			exit()
+	#	else:
+	#		print("Cannot install module Pillow")
+	#		exit()
 
 	if not argsExists(sys.argv):
 		exit()
 	if not androidFilesExists(sys.argv[1]):
 		exit()
+	if not isJavaInstalled():
+		exit()
+	if not isAndroidPathSet():
+		exit()
+	if not isFlutterInPath():
+		exit()
 	if not replaceData(sys.argv[1], sys.argv[2]):
 		exit()
+	buildProject()
 
 
 if __name__ == '__main__':
