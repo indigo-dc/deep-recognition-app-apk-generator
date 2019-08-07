@@ -11,6 +11,7 @@ import 'package:deep_app/history/history_repository.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:deep_app/api/recognition_api.dart';
+import 'package:deep_app/api/mock_recognition_api.dart';
 import 'package:flutter_native_image/flutter_native_image.dart';
 
 class AnalysisPage extends StatefulWidget {
@@ -362,7 +363,7 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
 
     final photoPaths = ListItem.getPhotosPathsList(items);
 
-    String stringResponse = await RecognitionApi().postTask(photoPaths).catchError((Object error){
+    String stringResponse = await MockRecognitionApi().postTask(photoPaths).catchError((Object error){
       setState(() {
         controller.reset();
         showSnackbar(error.toString());
