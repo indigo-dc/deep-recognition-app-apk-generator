@@ -1,8 +1,8 @@
-# APK Generator
-Python script [apkgenerator.py](apkgenerator.py) is used to build and generate unsigned release apk file of [DEEP generic app]. It allows parametrize design, urls and strings by setting them in the JSON file.
+# DEEP Recognition App APK Generator
+This repository contains sources of DEEP Recognition App written using Flutter and Python script [apkgenerator.py](apkgenerator.py) used to build and generate APK file. It allows parametrize design, urls and strings of the app by setting them in the JSON file.
 
 ## Installation and Usage
-To properly build Android project and generate apk, it is necessary to install following tools:
+To properly build project and generate apk, it is necessary to install following tools:
 
 * Python 3 and pip installer
 * JDK 8
@@ -11,7 +11,7 @@ To properly build Android project and generate apk, it is necessary to install f
 * Git client
 
 ### Instruction for Linux users.
-First install pip installer for python3 using apt:
+First install pip installer for Python 3 using apt:
 
 ```
 sudo apt update
@@ -63,20 +63,23 @@ cd deep_app
 git checkout generic
 ```
 ### Running script
-There are two necessary arguments while running script. Succesfully generated apk is located in `/app/build/outputs/apk/release`
+There are two necessary arguments while running script. Succesfully generated APK file is located in `build/app/outputs/apk/release`
 
 ```
 python3 apkgenerator.py {android_project_path} {json_path}
 ```
 
-## JSON Structure
+## Customization
+There are 10 parameters for customizing the app. It's possible to set name, main label, main image, version name, icon, API urls, main colors and icon of the app. 
+
+###JSON Structure
 JSON file with parameters to set in the app contains following fields:
 
 * `app_name` - name of the app,
 * `main_activity_label` - text displayed in the app's top bar,
-* `main_activity_image_url` - url of the png image displayed in the main activity(960x960),
-* `api_root_url` - root url of the api,
-* `api_post_endpoint` - full path of the api's endpoint,
+* `main_activity_image_url` - url of the png image displayed in the main activity (960x960),
+* `api_root_url` - root url of the API,
+* `api_post_endpoint` - full path of the API's endpoint,
 * `primary_color` - hex code of the primary color,
 * `primary_dark_color` - hex code of the primary dark color,
 * `accent_color` - hex code of the accent color,
@@ -84,3 +87,8 @@ JSON file with parameters to set in the app contains following fields:
 * `icon_image_url` - url of the png image app's icon (512x512).
 
 Example JSON [here](example_test.json).
+
+###Design Customization
+Customization of design parameters on screenshots.
+
+![alt text](https://box.psnc.pl/f/5d3a22dfc6/?raw=1)
