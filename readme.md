@@ -90,4 +90,4 @@ Example JSON [here](example_test.json).
 ### Design Customization
 Customization of design parameters on screenshots.
 
-![alt text](https://box.psnc.pl/f/5d3a22dfc6/?raw=1)
+![alt text](https://box.psnc.pl/f/c03786a80e/?raw=1)
