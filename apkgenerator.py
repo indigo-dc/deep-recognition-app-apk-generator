@@ -24,6 +24,7 @@ ANDROID_ICON_LAUNCHER_XXHDPI_PATH = '/android/app/src/main/res/mipmap-xxhdpi/ic_
 ANDROID_ICON_LAUNCHER_XXXHDPI_PATH = '/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_foreground.png'
 PREVIEW_IMAGE_PATH = '/assets/images/plant.png'
 ICON_PATH = '/assets/images/ic-launcher-web.png'
+PREDICT_JSON_PATH = "/assets/res/predict.json"
 
 
 PREVIEW_IMAGE_RESOLUTION = 960
@@ -66,6 +67,7 @@ def downloadFile(url, file_path):
 		return True
 	except Exception as e:
 		print('File not downloaded from: ' + url)
+		print(e)
 		return False
 
 def isImageResolutionCorrect(file_path, expected_width, expected_height):
@@ -181,33 +183,59 @@ def isFlutterInPath():
 		print('Flutter not found in PATH')
 		return False
 
+def extractPredictEndpoint(swagger_file_path):
+	with open(swagger_file_path) as swagger_json_file:
+		data = json.load(swagger_json_file)
+		for ep in data['paths']:
+			if 'predict' not in ep:
+				continue
+			val = data['paths'][ep]
+			ret_json = {}
+			ret_json[ep] = val
+			return ret_json
+			
+
+def savePredictEndpoint(file_path, json_obj):
+	with open(file_path, 'w') as f:
+		json.dump(json_obj,f)
+	
+
+def extractAPIRootUrl(swagger_file_path):
+	a, b = swagger_file_path.split('swagger.json', 1)
+	return a
+
 def replaceData(dir, json_file_path):
 	try:
 		with open(json_file_path) as json_file:
 			data = json.load(json_file)
 
-			if not (isUrl(data['main_activity_image_url']) and isUrl(data['api_root_url']) and isImage(data['main_activity_image_url']) and 
-				isUrl(data['icon_image_url']) and isColor(data['primary_color']) and isColor(data['primary_dark_color']) and isColor(data['accent_color'])):
+			if not (isUrl(data['main_activity_image_url']) and isImage(data['main_activity_image_url']) and isUrl(data['icon_image_url']) 
+				and isColor(data['primary_color']) and isColor(data['primary_dark_color']) and isColor(data['accent_color']) and isUrl(data['swagger_url'])):
 				return False
 
-			if not (downloadFile(data['main_activity_image_url'], dir + DOWNLOADED_MAIN_ACTIVITY_IMAGE_PATH) and downloadFile(data['icon_image_url'], dir + DOWNLOADED_ICON_PATH)):
+			if not (downloadFile(data['main_activity_image_url'], dir + DOWNLOADED_MAIN_ACTIVITY_IMAGE_PATH) and downloadFile(data['icon_image_url'], dir + DOWNLOADED_ICON_PATH)
+			 and downloadFile(data['swagger_url'], dir + "/swagger.json")):
 				return False
 
 			if not (isImageResolutionCorrect(dir + DOWNLOADED_MAIN_ACTIVITY_IMAGE_PATH, PREVIEW_IMAGE_RESOLUTION, PREVIEW_IMAGE_RESOLUTION) and isImageResolutionCorrect(dir + DOWNLOADED_ICON_PATH, ICON_IMAGE_RESOLUTION, ICON_IMAGE_RESOLUTION)):
-				return
+				return False
 
+			predictEndpoint = extractPredictEndpoint(dir + "/swagger.json")
+			predict_path = list(predictEndpoint.keys())[0]
+
+			savePredictEndpoint(dir + PREDICT_JSON_PATH, predictEndpoint[predict_path])
+			
+			#remove backslashes
+			u_predict_path = re.search('v2\/models\/[a-z0-9_]+\/predict', predict_path).group()
+
+			replaceLine(dir + APP_CONSTANTS_PATH, 'post_endpoint = \"(.+)\";', 'post_endpoint = \"' + u_predict_path + '\";')
 			replaceLine(dir + ANDROID_MANIFEST_PATH, 'android:label=\"(.+)\"', 'android:label=\"' + data['app_name'] + '\"')
 			replaceLine(dir + APP_CONSTANTS_PATH, 'app_label = \"(.+)\";', 'app_label = \"' + data['main_activity_label'] + '\";')
-			replaceLine(dir + APP_CONSTANTS_PATH, 'api_url = \"(.+)\";', 'api_url = \"' + data['api_root_url'] + '\";')
-			replaceLine(dir + APP_CONSTANTS_PATH, 'post_endpoint = \"(.+)\";', 'post_endpoint = \"' + data["api_post_endpoint"] + '\";')
-
+			replaceLine(dir + APP_CONSTANTS_PATH, 'api_url = \"(.+)\";', 'api_url = \"' + extractAPIRootUrl(data['swagger_url']) + '\";')
 
 			replaceLine(dir + APP_CONSTANTS_PATH, 'primary_color = Color\(0xFF([0-9,A-F,a-f]*)\);', 'primary_color = Color(0xFF' + data["primary_color"][-6:] + ');')
-
 			replaceLine(dir + APP_CONSTANTS_PATH, 'primary_dark_color = Color\(0xFF([0-9,A-F,a-f]*)\);', 'primary_dark_color = Color(0xFF' + data["primary_dark_color"][-6:] + ');')
-
 			replaceLine(dir + APP_CONSTANTS_PATH, 'accent_color = Color\(0xFF([0-9,A-F,a-f]*)\);', 'accent_color = Color(0xFF' + data["accent_color"][-6:] + ');')
-
 			replaceLine(dir + ANDROID_APP_BUILD_GRADLE_PATH, 'flutterVersionName = \'(.+)\'', 'flutterVersionName = \'' + data['version_name'] + '\'')
 
 			version_code = getIntegerValueFromFile(dir + ANDROID_APP_BUILD_GRADLE_PATH, "flutterVersionCode = \'[0-9]+\'")
