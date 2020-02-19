@@ -1,3 +1,4 @@
+import 'package:deep_app/utils/assets_manager.dart';
 import 'package:deep_app/utils/file_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:deep_app/utils/constants.dart';
@@ -13,6 +14,7 @@ import 'package:photo_view/photo_view.dart';
 import 'package:deep_app/api/recognition_api.dart';
 import 'package:deep_app/api/mock_recognition_api.dart';
 import 'package:flutter_native_image/flutter_native_image.dart';
+import 'package:flutter/foundation.dart';
 
 class AnalysisPage extends StatefulWidget {
   AnalysisPage({this.onPush, this.imagePickerHelper});
@@ -80,8 +82,16 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
           )
         ],
       ),
-      body: getPickColumn(),
+      //body: getPickColumn(),
+      body: getCustomColumn(),
     );
+  }
+
+  Column getCustomColumn(){
+    AssetsManager.getPredictEndpointInfo().then((pi){
+      var pname = pi.parameters[0].name;
+      debugPrint('predictInfo: $pname');
+    });
   }
 
   Column getPickColumn(){
