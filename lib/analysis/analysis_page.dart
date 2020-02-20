@@ -101,12 +101,16 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
       columns.add(Container(
         child: Align(
           alignment: Alignment.center,
-          child: Text(AppStrings.no_history),
+          child: Text("No config file"),
         ),
       ));
     } else {
       for(Parameter p in post.parameters) {
-        //if(p)
+        if(p.name == "data") {
+          if(p.description.contains("image")) {
+            columns.add(buildPhotosManagementBar());
+          }
+        }
       }
     }
     return Column(
