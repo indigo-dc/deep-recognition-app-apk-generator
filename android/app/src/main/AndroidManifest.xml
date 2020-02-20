@@ -8,7 +8,7 @@
          FlutterApplication and put your custom class here. -->
     <application
         android:name="io.flutter.app.FlutterApplication"
-        android:label="TEST NAME"
+        android:label="INDIGO Plant Recognition"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

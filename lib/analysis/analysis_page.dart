@@ -1,3 +1,4 @@
+import 'package:deep_app/analysis/post.dart';
 import 'package:deep_app/utils/assets_manager.dart';
 import 'package:deep_app/utils/file_manager.dart';
 import 'package:flutter/material.dart';
@@ -38,6 +39,8 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
   bool start_task_visibility;
 
   ImagePickerHelper imagePickerHelper;
+
+  Post post;
   //FileManager fileManager;
 
 
@@ -57,6 +60,11 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
     if(Navigator.canPop(context)){
       Navigator.pop(context);
     }
+    loadPredictEndpointInfo().then((p){
+      setState(() {
+        post = p;
+      });
+    });
     super.didUpdateWidget(oldWidget);
   }
 
@@ -82,16 +90,28 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
           )
         ],
       ),
-      //body: getPickColumn(),
-      body: getCustomColumn(),
+      body: buildCustomColumn(),
+      //body: getCustomColumn(),
     );
   }
 
-  Column getCustomColumn(){
-    AssetsManager.getPredictEndpointInfo().then((pi){
-      var pname = pi.parameters[0].name;
-      debugPrint('predictInfo: $pname');
-    });
+  Column buildCustomColumn(){
+    var columns = <Widget>[];
+    if(post == null) {
+      columns.add(Container(
+        child: Align(
+          alignment: Alignment.center,
+          child: Text(AppStrings.no_history),
+        ),
+      ));
+    } else {
+      for(Parameter p in post.parameters) {
+        //if(p)
+      }
+    }
+    return Column(
+      children: columns,
+    );
   }
 
   Column getPickColumn(){
@@ -411,6 +431,11 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
     Scaffold.of(context).showSnackBar(SnackBar(
       content: Text(text),
     ));
+  }
+
+  //loading from JSON file from assets
+  Future<Post> loadPredictEndpointInfo() async {
+    return await AssetsManager.getPredictEndpointInfo();
   }
 
   @override
