@@ -13,6 +13,7 @@ import site
 APP_CONSTANTS_PATH = '/lib/utils/constants.dart'
 ANDROID_MANIFEST_PATH = '/android/app/src/main/AndroidManifest.xml'
 ANDROID_APP_BUILD_GRADLE_PATH = '/android/app/build.gradle'
+APP_PUBSPEC = "/pubspec.yaml"
 
 PREVIEW_IMAGE_PATH = '/assets/images/plant.png'
 DOWNLOADED_MAIN_ACTIVITY_IMAGE_PATH = '/plant.png'
@@ -237,6 +238,8 @@ def replaceData(dir, json_file_path):
 			replaceLine(dir + APP_CONSTANTS_PATH, 'primary_dark_color = Color\(0xFF([0-9,A-F,a-f]*)\);', 'primary_dark_color = Color(0xFF' + data["primary_dark_color"][-6:] + ');')
 			replaceLine(dir + APP_CONSTANTS_PATH, 'accent_color = Color\(0xFF([0-9,A-F,a-f]*)\);', 'accent_color = Color(0xFF' + data["accent_color"][-6:] + ');')
 			replaceLine(dir + ANDROID_APP_BUILD_GRADLE_PATH, 'flutterVersionName = \'(.+)\'', 'flutterVersionName = \'' + data['version_name'] + '\'')
+
+			replaceLine(dir + APP_PUBSPEC, '#  - assets/res/predict.json', '  - assets/res/predict.json')
 
 			version_code = getIntegerValueFromFile(dir + ANDROID_APP_BUILD_GRADLE_PATH, "flutterVersionCode = \'[0-9]+\'")
 			if(version_code > 0):
