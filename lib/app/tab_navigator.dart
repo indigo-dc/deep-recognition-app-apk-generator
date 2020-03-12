@@ -1,3 +1,4 @@
+import 'package:deep_app/analysis/recorder_page.dart';
 import 'package:flutter/material.dart';
 import 'package:deep_app/app/bottom_navigation.dart';
 import 'package:deep_app/history/history_page.dart';
@@ -9,12 +10,14 @@ import 'package:deep_app/analysis/task.dart';
 class TabNavigatorRoutes{
   static const String root = "/";
   static const String results = "/results";
+  static const String recorder = "/recorder";
 }
 
 class TabNavigator extends StatelessWidget {
-  TabNavigator({this.navigatorKey, this.tabItem});
+  TabNavigator({this.navigatorKey, this.tabItem, this.onAppBarVisibility});
   final GlobalKey<NavigatorState> navigatorKey;
   final TabItem tabItem;
+  final ValueChanged<bool> onAppBarVisibility;
 
   _push(BuildContext context, {Task task}) {
     var routeBuilders = _routeBuilders(context, task: task);
@@ -27,6 +30,19 @@ class TabNavigator extends StatelessWidget {
     );
   }
 
+  _pushRecorder(BuildContext context) {
+    var routeBuilders = _routeBuilders(context);
+
+    onAppBarVisibility(true);
+
+    return Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) =>
+                routeBuilders[TabNavigatorRoutes.recorder](context))
+    );
+  }
+
   Map<String, WidgetBuilder> _routeBuilders(BuildContext context,
       {Task task}) {
 
@@ -34,11 +50,13 @@ class TabNavigator extends StatelessWidget {
       TabNavigatorRoutes.root: (context) => AnalysisPage(
         onPush: (task) => _push(context, task: task),
         imagePickerHelper: ImagePickerHelper(),
+        onPushRecorder: () =>_pushRecorder(context),
         //fileManager: FileManager(),
       ),
       TabNavigatorRoutes.results: (context) => ResultPage(
         task: task,
-      )
+      ),
+      TabNavigatorRoutes.recorder: (context) => RecorderPage()
     };
 
     final historyMap = {
@@ -53,6 +71,7 @@ class TabNavigator extends StatelessWidget {
     final creditsMap = {
       TabNavigatorRoutes.root: (context) => CreditsPage(),
     };
+
 
     switch(tabItem){
       case TabItem.analysis:

@@ -33,7 +33,8 @@ class Parameter{
       default_: json["default"] == null ? null : json["default"],
       x_nullable: json["x-nullable"] == null ? null : json["x-nullable"],
       enum_: json['enum'] == null ? null : new List<String>.from(json["enum"]),
-      description: json["type"] == null ? null : json["type"]
+      description: json["description"] == null ? null : json["description"],
+      type: json["type"] == null ? null : json["type"]
     );
   }
 

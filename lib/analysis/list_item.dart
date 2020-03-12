@@ -26,3 +26,9 @@ class PhotoItem implements ListItem {
   final String path;
   PhotoItem(this.path);
 }
+
+class AudioItem implements ListItem {
+  final String path;
+  bool is_playing;
+  AudioItem(this.path, this.is_playing);
+}

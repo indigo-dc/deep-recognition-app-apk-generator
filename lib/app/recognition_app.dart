@@ -13,6 +13,8 @@ class RecognitionApp extends StatefulWidget {
 
 class _AppState extends State<RecognitionApp>{
 
+  bool app_bar_visibility = true;
+
   TabItem currentTab = TabItem.analysis;
   Map<TabItem, GlobalKey<NavigatorState>> navigatorKeys = {
     TabItem.analysis: GlobalKey<NavigatorState>(),
@@ -40,6 +42,12 @@ class _AppState extends State<RecognitionApp>{
     }
   }
 
+  void _changeAppBarVisibility(bool visibility) {
+    setState(() {
+      app_bar_visibility = visibility;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -50,7 +58,7 @@ class _AppState extends State<RecognitionApp>{
           _buildOffstageNavigator(TabItem.history),
           _buildOffstageNavigator(TabItem.credits)
         ],),
-        bottomNavigationBar: Theme(
+        bottomNavigationBar: app_bar_visibility ? Theme(
           data: Theme.of(context).copyWith(
             // sets the background color of the `BottomNavigationBar`
               canvasColor: AppColors.primary_color,
@@ -64,9 +72,10 @@ class _AppState extends State<RecognitionApp>{
             currentTab: currentTab,
             onSelectTab: _selectTab,
           ),
-        )
+        ) : SizedBox()
     )
     );
+
   }
 
   Widget _buildOffstageNavigator(TabItem tabItem) {
@@ -75,6 +84,7 @@ class _AppState extends State<RecognitionApp>{
       child: TabNavigator(
         navigatorKey: navigatorKeys[tabItem],
         tabItem: tabItem,
+        onAppBarVisibility: _changeAppBarVisibility,
       ),
     );
   }
