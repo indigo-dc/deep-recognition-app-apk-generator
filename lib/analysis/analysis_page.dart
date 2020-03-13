@@ -3,6 +3,7 @@ import 'dart:ffi';
 import 'package:deep_app/analysis/post.dart';
 import 'package:deep_app/analysis/recorder_page.dart';
 import 'package:deep_app/utils/assets_manager.dart';
+import 'package:deep_app/utils/file_downloader.dart';
 import 'package:deep_app/utils/file_manager.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -56,6 +57,8 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
   Map query_values;
   FlutterSound flutterSound;
   var playerSubscription;
+  bool urlAddButtonVisibility;
+  TextEditingController urlController;
   //FileManager fileManager;
 
 
@@ -215,7 +218,7 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
         columns.add(Row(
           children: <Widget>[
             buildImageCameraButtonContainer(),
-            buildImageFileButtonContainer(),
+            buildImageFileButtonContainer()
           ],
         ));
       }
@@ -238,11 +241,9 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
         ));
       }
       if(current_data_input == "urls") {
-        columns.add(Row(
-          children: <Widget>[
-            buildAudioURLButtonContainer()
-          ],
-        ));
+        columns.add(
+            buildUrlInput()
+        );
       }
     }
 
@@ -294,7 +295,7 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
             elevation: 0.0,
             padding: EdgeInsets.all(10.0),
             onPressed: pressedPickAudioFromRecorder,
-            child: getButtonColumn(Icons.record_voice_over, "RECORDER"
+            child: getButtonColumn(Icons.record_voice_over, "RECORDER", Colors.grey
             ))
     );
   }
@@ -307,11 +308,11 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
             elevation: 0.0,
             padding: EdgeInsets.all(10.0),
             onPressed: pressedPickAudioFromFile,
-            child: getButtonColumn(Icons.file_upload, "FILE"
+            child: getButtonColumn(Icons.file_upload, "FILE", Colors.black
             ))
     );
   }
-  Container buildAudioURLButtonContainer() {
+  /*Container buildAudioURLButtonContainer() {
     return Container(
       margin: EdgeInsets.only(left: 10.0),
       child: RaisedButton(
@@ -320,10 +321,10 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
           elevation: 0.0,
           padding: EdgeInsets.all(10.0),
           onPressed: pressedPickAudioFromURL,
-          child: getButtonColumn(Icons.web_asset, "URL"
+          child: getButtonColumn(Icons.web_asset, "URL", Colors.black
           )),
     );
-  }
+  }*/
   Container buildImageCameraButtonContainer() {
     return Container(
         margin: EdgeInsets.only(left: 10.0),
@@ -333,7 +334,7 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
             elevation: 0.0,
             padding: EdgeInsets.all(10.0),
             onPressed: pressedPickImageFromCamera,
-            child: getButtonColumn(Icons.photo_camera, "CAMERA"
+            child: getButtonColumn(Icons.photo_camera, "CAMERA", Colors.black
             ))
     );
   }
@@ -346,7 +347,7 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
             elevation: 0.0,
             padding: EdgeInsets.all(10.0),
             onPressed: pressedPickImageFromGallery,
-            child: getButtonColumn(Icons.file_upload, "GALLERY"
+            child: getButtonColumn(Icons.file_upload, "GALLERY", Colors.black
             ))
     );
   }
@@ -359,9 +360,57 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
           elevation: 0.0,
           padding: EdgeInsets.all(10.0),
           onPressed: pressedPickImageFromURL,
-          child: getButtonColumn(Icons.web_asset, "URL"
+          child: getButtonColumn(Icons.web_asset, "URL", Colors.black
           )),
     );
+  }
+
+  Container buildUrlInput() {
+      return Container(
+        margin: EdgeInsets.only(left: 20.0, right: 20.0),
+        child: Row(
+          children: <Widget>[
+            Expanded(
+              flex: 8,
+              child: TextField(
+                onChanged: (text) {
+                  if(text.isEmpty) {
+                    setState(() {
+                      urlAddButtonVisibility = false;
+                    });
+                  }else {
+                    setState(() {
+                      urlAddButtonVisibility = true;
+                    });
+                  }
+                },
+                decoration: InputDecoration(
+                    hintText: "https://url-of-audio-file"
+                ),
+                controller: urlController,
+              ),
+            ),
+            Expanded(
+              flex: 2,
+              child: urlAddButtonVisibility ? Align(
+                alignment: Alignment.center,
+                child: RaisedButton(
+                  child: Icon(
+                    Icons.add_circle,
+                    color: AppColors.accent_color,
+                    size: 30,
+                  ),
+                  elevation: 0.0,
+                  onPressed: () {
+                    pressedPickAudioFromURL(urlController.text);
+                    },
+                  color: Colors.transparent,
+                ),
+              ) : Container(),
+            )
+          ],
+        )
+      );
   }
 
   //returns multiline list of picked items
@@ -631,7 +680,9 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
     query_parameters = [];
     query_values = Map();
     flutterSound = FlutterSound();
-  }
+    urlAddButtonVisibility = false;
+    urlController = TextEditingController();
+}
 
   //method when user chose different data input type
   void changedDataInputType(String selectedItem) {
@@ -715,12 +766,13 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
   }
 
   void pressedPickImageFromURL() async {
-    showSnackbar("Not implemented yet");
+    //showSnackbar("Not implemented yet");
+
   }
 
   void pressedPickAudioFromRecorder() async {
-    //showSnackbar("Not implemented yet");
-    widget.onPushRecorder();
+    showSnackbar("Not implemented yet");
+   // widget.onPushRecorder();
   }
 
   void pressedPickAudioFromFile() async {
@@ -736,9 +788,23 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
     }
   }
 
-  void pressedPickAudioFromURL() async {
-    showSnackbar("Not implemented yet");
+  void pressedPickAudioFromURL(String url) async {
+    try{
+      FileDownloader.downloadFile(url).then((fp){
+        if(fp != null) {
+          setState(() {
+            data_items.add(AudioItem(fp, false));
+          });
+        }
+      }
+      );
+    }catch(e){
+      print("Error: $e");
+    }
+    //showSnackbar("Not implemented yet");
   }
+
+
 
 
 
@@ -774,7 +840,7 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
                     padding: EdgeInsets.all(10.0),
                     color: AppColors.accent_color,
                     onPressed: pressedPickImageFromCamera,
-                    child: getButtonColumn(Icons.photo_camera, item.text)
+                    child: getButtonColumn(Icons.photo_camera, item.text, Colors.black)
                 );
               }else if(item.text == AppStrings.file){
                 return RaisedButton(
@@ -783,7 +849,7 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
                     padding: EdgeInsets.all(10.0),
                     color: AppColors.accent_color,
                     onPressed: pressedPickImageFromGallery,
-                    child: getButtonColumn(Icons.file_upload, item.text)
+                    child: getButtonColumn(Icons.file_upload, item.text, Colors.black)
                 );
               }
             }else if(item is InfoItem) {
@@ -868,12 +934,17 @@ class AnalysisPageState extends State<AnalysisPage> with AutomaticKeepAliveClien
   }
 
 
-  Column getButtonColumn(IconData icon, String text){
+  Column getButtonColumn(IconData icon, String text, Color color){
     return Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
-          Icon(icon),
-          Text(text),
+          Icon(
+            icon,
+            color: color),
+          Text(
+            text,
+            style: TextStyle(color: color),
+          ),
         ]
     );
   }
