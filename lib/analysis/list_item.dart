@@ -1,5 +1,6 @@
 abstract class ListItem{
-
+  final String path;
+  ListItem(this.path);
   static getPhotosPathsList(List<ListItem> items){
     List <String> photoPaths = [];
     for(ListItem li in items){
@@ -12,7 +13,7 @@ abstract class ListItem{
 
 }
 
-class ButtonItem implements ListItem {
+/*class ButtonItem implements ListItem {
   final String text;
   ButtonItem(this.text);
 }
@@ -20,7 +21,7 @@ class ButtonItem implements ListItem {
 class InfoItem implements ListItem {
   final String text;
   InfoItem(this.text);
-}
+}*/
 
 class PhotoItem implements ListItem {
   final String path;

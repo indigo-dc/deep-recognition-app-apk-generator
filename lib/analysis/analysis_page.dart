@@ -52,10 +52,11 @@ class AnalysisPageState extends State<AnalysisPage>
   Post post;
   String current_data_input;
   List data_inputs;
-  String data_input_type;
+  String media_input_type;
   List<ListItem> data_items;
   List<Parameter> query_parameters;
   Map query_values;
+  Map query_controllers;
   FlutterSound flutterSound;
   var playerSubscription;
   bool urlAddButtonVisibility;
@@ -78,10 +79,10 @@ class AnalysisPageState extends State<AnalysisPage>
         for (Parameter p in post.parameters) {
           if (p.name == "urls" || p.name == "data") {
             if (p.description.contains("image")) {
-              data_input_type = "image";
+              media_input_type = "image";
               data_inputs.add(p.name);
             } else if (p.description.contains("audio")) {
-              data_input_type = "audio";
+              media_input_type = "audio";
               data_inputs.add(p.name);
             } else {
               query_parameters.add(p);
@@ -188,14 +189,14 @@ class AnalysisPageState extends State<AnalysisPage>
           child: Align(
             alignment: Alignment.bottomLeft,
             child: Text(
-              "Load " + data_input_type + " from:",
+              "Load " + media_input_type + " from:",
               style:
                   TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
             ),
           ),
         )));
 
-    if (data_input_type == "image") {
+    if (media_input_type == "image") {
       if (current_data_input == "data") {
         columns.add(Row(
           children: <Widget>[
@@ -209,7 +210,7 @@ class AnalysisPageState extends State<AnalysisPage>
       }
     }
 
-    if (data_input_type == "audio") {
+    if (media_input_type == "audio") {
       if (current_data_input == "data") {
         columns.add(Row(
           children: <Widget>[
@@ -247,7 +248,8 @@ class AnalysisPageState extends State<AnalysisPage>
     columns.add(Container(
       margin: EdgeInsets.only(top: 20.0),
       child: RaisedButton(
-        onPressed: null,
+        color: AppColors.accent_color,
+        onPressed: isRequiredDataFilled() ? () => pressedAnalyseButton(current_data_input, data_inputs, query_values) : null ,
         child: Text("Analyse"),
       ),
     ));
@@ -457,14 +459,14 @@ class AnalysisPageState extends State<AnalysisPage>
   }
 
   //unused
-  Column getPickColumn() {
+  /*Column getPickColumn() {
     return Column(
       children: <Widget>[
         buildPhotosManagementBar(),
         buildPreviewImageExpanded(image_preview_path)
       ],
     );
-  }
+  }*/
 
   Stack buildImageStack(PhotoItem item) {
     return Stack(
@@ -614,6 +616,7 @@ class AnalysisPageState extends State<AnalysisPage>
   }
 
   Column buildQueryParameterTextInputColumn(Parameter p) {
+    query_controllers.putIfAbsent(p, () => TextEditingController());
     return Column(
       children: <Widget>[
         Align(
@@ -625,6 +628,7 @@ class AnalysisPageState extends State<AnalysisPage>
         Align(
             alignment: Alignment.centerLeft,
             child: TextFormField(
+              controller: query_controllers[p],
               initialValue: query_values[p],
             ))
       ],
@@ -669,13 +673,14 @@ class AnalysisPageState extends State<AnalysisPage>
     ];
     start_task_visibility = false;
 
-    data_input_type = "";
+    media_input_type = "";
     data_inputs = List();
     query_parameters = [];
     query_values = Map();
     flutterSound = FlutterSound();
     urlAddButtonVisibility = false;
     urlController = TextEditingController();
+    query_controllers = Map();
   }
 
   //method when user chose different data input type
@@ -817,9 +822,36 @@ class AnalysisPageState extends State<AnalysisPage>
     }
   }
 
+  void pressedAnalyseButton(String dataInputType, List dataInputs, Map queryValues) async {
+    Map<String, String> queryMap = Map();
+    if(dataInputType == "urls") {
+      String urlsVal = "";
+      for(ListItem li in dataInputs) {
+        urlsVal = urlsVal + "," +li.path;
+      }
+      queryMap.putIfAbsent("urls", () => urlsVal);
+    }
+    for(Parameter p in queryValues.keys) {
+      if(p.enum_ == null) {
+        queryMap.putIfAbsent(p.name, query_controllers[p].value);
+      } else {
+        queryMap.putIfAbsent(p.name, queryValues[p]);
+      }
+    }
+    showSnackbar("Not implemented yet");
+  }
+
+  bool isRequiredDataFilled() {
+    if(data_items.length != 0) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
 
   //old code
-  Container buildPhotosManagementBar() {
+  /*Container buildPhotosManagementBar() {
     return Container(
       height: 85.0,
       width: double.infinity,
@@ -869,7 +901,7 @@ class AnalysisPageState extends State<AnalysisPage>
             }
           }),
     );
-  }
+  }*/
 
   Expanded buildPreviewImageExpanded(String path) {
     var pv;
@@ -980,6 +1012,8 @@ class AnalysisPageState extends State<AnalysisPage>
     return await hr.addTask(photoPaths, results);
   }
 
+
+  //used code
   showSnackbar(String text) {
     Scaffold.of(context).showSnackBar(SnackBar(
       content: Text(text),

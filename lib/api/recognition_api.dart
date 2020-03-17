@@ -1,4 +1,5 @@
 import 'package:deep_app/utils/constants.dart';
+import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 
@@ -6,8 +7,12 @@ import 'package:http_parser/http_parser.dart';
 class RecognitionApi{
   final String server = AppStrings.api_url;
 
-  Future<String> postTask(List<String> photoPaths) async {
-    var url = server + AppStrings.post_endpoint;
+  Future<String> postTask(Map queryValues) async {
+    Dio dio = Dio();
+    String url = server + AppStrings.post_endpoint;
+    Response response = await dio.get(url, queryParameters: queryValues);
+
+    /*var url = server + AppStrings.post_endpoint;
     var uri = Uri.parse(url);
     var request = http.MultipartRequest("POST", uri);
     for(String p in photoPaths){
@@ -24,7 +29,7 @@ class RecognitionApi{
       final ne = AppStrings.network_error;
       final ec = streamedResponse.statusCode.toString();
       throw '$ne: $ec';
-    }
+    }*/
   }
 
 }
