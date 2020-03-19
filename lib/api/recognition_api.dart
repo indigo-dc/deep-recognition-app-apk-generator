@@ -7,8 +7,8 @@ import 'package:path/path.dart' as path;
 
 
 class RecognitionApi{
-  //final String server = AppStrings.api_url;
-  final String server = "http://192.168.0.21:5000/";
+  final String server = AppStrings.api_url;
+  //final String server = "http://192.168.0.21:5000/";
 
   Future<String> postPredictUrl(Map queryMap) async {
     try{
