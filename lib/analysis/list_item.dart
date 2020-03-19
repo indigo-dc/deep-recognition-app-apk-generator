@@ -1,6 +1,7 @@
 abstract class ListItem{
   final String path;
-  ListItem(this.path);
+  final String url;
+  ListItem(this.path, {this.url});
   static getPhotosPathsList(List<ListItem> items){
     List <String> photoPaths = [];
     for(ListItem li in items){
@@ -25,11 +26,13 @@ class InfoItem implements ListItem {
 
 class PhotoItem implements ListItem {
   final String path;
-  PhotoItem(this.path);
+  final String url;
+  PhotoItem(this.path, {this.url});
 }
 
 class AudioItem implements ListItem {
   final String path;
+  final String url;
   bool is_playing;
-  AudioItem(this.path, this.is_playing);
+  AudioItem(this.path, this.is_playing, {this.url});
 }

@@ -1,35 +1,45 @@
+import 'package:deep_app/analysis/list_item.dart';
 import 'package:deep_app/utils/constants.dart';
 import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
+import 'package:path/path.dart' as path;
 
 
 class RecognitionApi{
-  final String server = AppStrings.api_url;
+  //final String server = AppStrings.api_url;
+  final String server = "http://192.168.0.21:5000/";
 
-  Future<String> postTask(Map queryValues) async {
-    Dio dio = Dio();
-    String url = server + AppStrings.post_endpoint;
-    Response response = await dio.get(url, queryParameters: queryValues);
-
-    /*var url = server + AppStrings.post_endpoint;
-    var uri = Uri.parse(url);
-    var request = http.MultipartRequest("POST", uri);
-    for(String p in photoPaths){
-      request.files.add(await http.MultipartFile.fromPath("data", p, contentType: MediaType('image', 'jpeg')));
+  Future<String> postPredictUrl(Map queryMap) async {
+    try{
+      Dio dio = Dio();
+      String url = server + AppStrings.post_endpoint;
+      Response response = await dio.post(url, queryParameters: queryMap, options: Options(headers: {"Accept" : "application/json"}));
+      return response.data.toString();
+    } catch(e) {
+      return Future.error(e);
     }
-    var streamedResponse = await request.send().catchError((Object error){
-      throw AppStrings.network_exception_message;
-    });
+  }
 
-    if(streamedResponse.statusCode == 200){
-      http.Response response = await http.Response.fromStream(streamedResponse);
-      return response.body;
-    }else{
-      final ne = AppStrings.network_error;
-      final ec = streamedResponse.statusCode.toString();
-      throw '$ne: $ec';
-    }*/
+  Future<String> postPredictData(List dataInputs, Map queryMap) async{
+    try{
+      Dio dio = Dio();
+      String url = server + AppStrings.post_endpoint;
+      FormData formData = FormData();
+      for(ListItem li in dataInputs) {
+        MediaType mediaType;
+        if(li is PhotoItem) {
+          mediaType = MediaType('image', 'jpeg');
+        }else {
+          //TODO
+        }
+        formData.files.add(MapEntry("data", MultipartFile.fromFileSync(li.path, filename: path.basename(li.path), contentType: mediaType)));
+      }
+      Response response = await dio.post(url, queryParameters: queryMap, data: formData, options: Options(headers: {"Accept" : "application/json", "Content-Type" : "multipart/form-data"}));
+      return(response.data.toString());
+    } catch(e) {
+      return Future.error(e);
+    }
   }
 
 }

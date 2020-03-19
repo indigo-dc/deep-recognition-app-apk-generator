@@ -249,7 +249,7 @@ class AnalysisPageState extends State<AnalysisPage>
       margin: EdgeInsets.only(top: 20.0),
       child: RaisedButton(
         color: AppColors.accent_color,
-        onPressed: isRequiredDataFilled() ? () => pressedAnalyseButton(current_data_input, data_inputs, query_values) : null ,
+        onPressed: isRequiredDataFilled() ? () => pressedAnalyseButton(current_data_input, data_items, query_values) : null ,
         child: Text("Analyse"),
       ),
     ));
@@ -616,7 +616,7 @@ class AnalysisPageState extends State<AnalysisPage>
   }
 
   Column buildQueryParameterTextInputColumn(Parameter p) {
-    query_controllers.putIfAbsent(p, () => TextEditingController());
+    query_controllers.putIfAbsent(p, () => TextEditingController()..text = query_values[p]);
     return Column(
       children: <Widget>[
         Align(
@@ -627,9 +627,9 @@ class AnalysisPageState extends State<AnalysisPage>
         ),
         Align(
             alignment: Alignment.centerLeft,
-            child: TextFormField(
+            child: TextField(
               controller: query_controllers[p],
-              initialValue: query_values[p],
+              //initialValue: query_values[p],
             ))
       ],
     );
@@ -776,7 +776,7 @@ class AnalysisPageState extends State<AnalysisPage>
       if (filePath != null) {
         urlController.clear();
         setState(() {
-          data_items.add(PhotoItem(filePath));
+          data_items.add(PhotoItem(filePath, url: url));
           urlAddButtonVisibility = false;
         });
       } else {
@@ -811,7 +811,7 @@ class AnalysisPageState extends State<AnalysisPage>
       if (filePath != null) {
         urlController.clear();
         setState(() {
-          data_items.add(AudioItem(filePath, false));
+          data_items.add(AudioItem(filePath, false, url: url));
           urlAddButtonVisibility = false;
         });
       } else {
@@ -823,22 +823,42 @@ class AnalysisPageState extends State<AnalysisPage>
   }
 
   void pressedAnalyseButton(String dataInputType, List dataInputs, Map queryValues) async {
-    Map<String, String> queryMap = Map();
-    if(dataInputType == "urls") {
-      String urlsVal = "";
-      for(ListItem li in dataInputs) {
-        urlsVal = urlsVal + "," +li.path;
-      }
-      queryMap.putIfAbsent("urls", () => urlsVal);
-    }
+    RecognitionApi recognitionApi = RecognitionApi();
+    Map<String, dynamic> queryMap = Map();
     for(Parameter p in queryValues.keys) {
       if(p.enum_ == null) {
-        queryMap.putIfAbsent(p.name, query_controllers[p].value);
+        queryMap.putIfAbsent(p.name, () => query_controllers[p].text);
       } else {
-        queryMap.putIfAbsent(p.name, queryValues[p]);
+        queryMap.putIfAbsent(p.name, () => queryValues[p]);
       }
     }
-    showSnackbar("Not implemented yet");
+    if(dataInputType == "urls") {
+      String urlsVal = "";
+      for(int i=0; i<dataInputs.length; i++) {
+        urlsVal = urlsVal + dataInputs[i].url;
+        if(i+1 < dataInputs.length) {
+          urlsVal = urlsVal + ",";
+        }
+      }
+      queryMap.putIfAbsent("urls", () => urlsVal);
+
+      recognitionApi.postPredictUrl(queryMap)
+          .then((val) {
+            showSnackbar(val);
+            //widget.onPush(Task());
+          })
+          .catchError((error) {
+            showSnackbar(error.toString());
+      });
+    } else if(dataInputType == "data") {
+      recognitionApi.postPredictData(dataInputs, queryMap)
+          .then((val){
+            showSnackbar(val);
+          })
+          .catchError((e) {
+            showSnackbar(e.toString());
+          });
+    }
   }
 
   bool isRequiredDataFilled() {
