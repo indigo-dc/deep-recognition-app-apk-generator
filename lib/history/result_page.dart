@@ -14,7 +14,12 @@ class ResultPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    var images = getImagesWidgetList(task.image_paths);
+    var media_items;
+    if(task.media_input_type == "audio") {
+      media_items = List<Widget>();
+    } else if(task.media_input_type == "image") {
+      media_items = getImagesWidgetList(task.file_paths);
+    }
 
     return Scaffold(
         appBar: AppBar(
@@ -50,10 +55,10 @@ class ResultPage extends StatelessWidget {
                     children: <Widget>[
                       PageIndicatorContainer(
                         pageView: PageView(
-                          children: images,
+                          children: media_items,
                         ),
                         align: IndicatorAlign.bottom,
-                        length: images.length,
+                        length: media_items.length,
                         padding: EdgeInsets.only(bottom: 10.0),
                         size: 10.0,
                         indicatorSpace: 10.0,
@@ -68,9 +73,9 @@ class ResultPage extends StatelessWidget {
                   child: Container(
                     child: ListView.builder(
                         padding: EdgeInsets.only(top: 0.0),
-                        itemCount: task.results.predictions.length,
+                        itemCount: task.predictResponse.predictions.labels.length,
                         itemBuilder: (BuildContext context, int index) {
-                          final item = task.results.predictions[index];
+                          //final item = task.results.predictions[index];
                           var background_color;
                           var text_color;
                           var iconContainer;
@@ -81,7 +86,7 @@ class ResultPage extends StatelessWidget {
 
                             var icon;
 
-                            if(item.probability <= 0.3){
+                            if(task.predictResponse.predictions.probabilities[index] <= 0.3){
                               text_color = Colors.red;
                               icon = Icon(
                                 Icons.warning,
@@ -117,7 +122,7 @@ class ResultPage extends StatelessWidget {
                                   Expanded(
                                     flex: 50,
                                     child: Text(
-                                      item.label,
+                                      task.predictResponse.predictions.labels[index],
                                       style: TextStyle(
                                         fontSize: 18.0,
                                         color: text_color,
@@ -130,7 +135,7 @@ class ResultPage extends StatelessWidget {
                                     GestureDetector(
                                       onTap: () {
                                         //print("Tapped info icon");
-                                        _launchURL(item.info.links.wikipedia);
+                                        _launchURL(task.predictResponse.predictions.links.wikipedia[index]);
                                       },
                                       child: Icon(
                                         Icons.info,
@@ -139,9 +144,23 @@ class ResultPage extends StatelessWidget {
                                     ),
                                   ),
                                   Expanded(
+                                    flex: 13,
+                                    child:
+                                    GestureDetector(
+                                      onTap: () {
+                                        //print("Tapped info icon");
+                                        _launchURL(task.predictResponse.predictions.links.googleImages[index]);
+                                      },
+                                      child: Icon(
+                                        Icons.image,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
                                     flex: 20,
                                     child: Text(
-                                      (item.probability * 100).toStringAsFixed(2) + " %",
+                                      (task.predictResponse.predictions.probabilities[index] * 100).toStringAsFixed(2) + " %",
                                       textAlign: TextAlign.right,
                                       style: TextStyle(
                                           fontSize: 18.0,
@@ -161,6 +180,7 @@ class ResultPage extends StatelessWidget {
             )
     );
   }
+
 
   List<Widget> getImagesWidgetList(List <String> imgPaths){
     List<Widget> imagesWidgets  = [];
@@ -215,8 +235,9 @@ class ResultPage extends StatelessWidget {
   }
 
   Future<bool> _deleteTaskFromRepository(int taskId) async{
-    HistoryRepository historyRepository = HistoryRepository();
-    return await historyRepository.removeTask(taskId);
+    /*HistoryRepository historyRepository = HistoryRepository();
+    return await historyRepository.removeTask(taskId);*/
+    return true;
   }
 
 }

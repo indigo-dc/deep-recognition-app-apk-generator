@@ -116,7 +116,7 @@ class AnalysisPageState extends State<AnalysisPage>
       appBar: AppBar(
         backgroundColor: AppColors.primary_color,
         title: Text(AppStrings.app_label),
-        actions: <Widget>[
+        /*actions: <Widget>[
           Visibility(
             visible: start_task_visibility,
             child: IconButton(
@@ -127,7 +127,7 @@ class AnalysisPageState extends State<AnalysisPage>
                   key: Key("startTaskIcon"),
                 )),
           )
-        ],
+        ],*/
       ),
       body: SingleChildScrollView(
         child: buildPageColumn(),
@@ -844,8 +844,8 @@ class AnalysisPageState extends State<AnalysisPage>
 
       recognitionApi.postPredictUrl(queryMap)
           .then((val) {
-            showSnackbar(val);
-            //widget.onPush(Task());
+            var filePaths = data_items.map((pi) => pi.path).toList();
+            widget.onPush(Task(file_paths: filePaths, predictResponse: val, media_input_type: media_input_type));
           })
           .catchError((error) {
             showSnackbar(error.toString());
@@ -853,7 +853,8 @@ class AnalysisPageState extends State<AnalysisPage>
     } else if(dataInputType == "data") {
       recognitionApi.postPredictData(dataInputs, queryMap)
           .then((val){
-            showSnackbar(val);
+            var filePaths = data_items.map((pi) => pi.path).toList();
+            widget.onPush(Task(file_paths: filePaths, predictResponse: val, media_input_type: media_input_type));
           })
           .catchError((e) {
             showSnackbar(e.toString());
@@ -1001,7 +1002,7 @@ class AnalysisPageState extends State<AnalysisPage>
     return imagesWidgets;
   }
 
-  onStartTaskPressed() async {
+  /*onStartTaskPressed() async {
     controller.forward();
 
     final photoPaths = ListItem.getPhotosPathsList(data_items);
@@ -1024,13 +1025,13 @@ class AnalysisPageState extends State<AnalysisPage>
       });
       widget.onPush(t);
     });
-  }
+  }*/
 
-  Future<Task> addTaskToRepository(
+  /*Future<Task> addTaskToRepository(
       List<String> photoPaths, Results results) async {
     HistoryRepository hr = HistoryRepository();
     return await hr.addTask(photoPaths, results);
-  }
+  }*/
 
 
   //used code

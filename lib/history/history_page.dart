@@ -92,7 +92,7 @@ class HistoryPageState extends State<HistoryPage> with AutomaticKeepAliveClientM
                       fit: BoxFit.cover,
                       width: double.infinity,
                       placeholder: MemoryImage(kTransparentImage),
-                      image: FileImage(File(tasks[index].image_paths[0]))
+                      image: FileImage(File(tasks[index].file_paths[0]))
                   ),
                   Align(
                     alignment: Alignment.bottomCenter,
@@ -101,7 +101,8 @@ class HistoryPageState extends State<HistoryPage> with AutomaticKeepAliveClientM
                       width: double.infinity,
                       padding: EdgeInsets.all(5.0),
                       child: Text(
-                        PredictionTitleManager.getTitleForPrediction(tasks[index].results.predictions[0]),
+                          "pred[0]",
+                        //PredictionTitleManager.getTitleForPrediction(/*tasks[index].results.predictions[0]*/ ),
                         style: TextStyle(
                             color: Colors.white
                         ),
@@ -118,7 +119,7 @@ class HistoryPageState extends State<HistoryPage> with AutomaticKeepAliveClientM
 
   Future<List<Task>> loadTasks() async{
     HistoryRepository historyRepository = HistoryRepository();
-    final tasks = await historyRepository.getTasks();
+    //final tasks = await historyRepository.getTasks();
     return tasks;
   }
 
@@ -135,7 +136,7 @@ class HistoryPageState extends State<HistoryPage> with AutomaticKeepAliveClientM
 
 }
 
-class PredictionTitleManager{
+/*class PredictionTitleManager{
   static String getTitleForPrediction(Prediction prediction){
     if(prediction.probability < 0.3){
       return prediction.label + " (!)";
@@ -143,4 +144,4 @@ class PredictionTitleManager{
       return prediction.label;
     }
   }
-}
+}*/

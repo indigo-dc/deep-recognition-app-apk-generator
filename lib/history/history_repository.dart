@@ -3,7 +3,7 @@ import 'package:deep_app/utils/offline_storage.dart';
 
 class HistoryRepository{
 
-  Future<List<Task>> getTasks() async{
+  /*Future<List<Task>> getTasks() async{
     var taskslist = await OfflineStorage.getList();
     return taskslist.tasks;
   }
@@ -33,5 +33,5 @@ class HistoryRepository{
       }
     }
     return false;
-  }
+  }*/
 }
