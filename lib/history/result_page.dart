@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:deep_app/utils/constants.dart';
@@ -46,172 +47,184 @@ class ResultPageState extends State<ResultPage> {
       media_items = getImagesWidgetList(task.file_paths);
     }
 
-    return Scaffold(
-        appBar: AppBar(
-          backgroundColor: AppColors.primary_color,
-          title: Text(AppStrings.app_label),
-          actions: <Widget>[
-            IconButton(
-                onPressed: () {
-                  showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return showAlertDialog(context, task.id);
-                      }
-                  ).then((val){
-                    if(is_deleted){
-                      Navigator.pop(context, true);
-                    }
-                  });
-                },
-                icon: Icon(
-                  Icons.delete,
-                  size: 25.0,
-                  color: Colors.white,
-                )
-            ),
-          ],
-        ),
-        body: Column(
-          children: <Widget>[
-            Expanded(
-              flex: 5,
-              child: Stack(
-                children: <Widget>[
-                  PageIndicatorContainer(
-                    pageView: PageView(
-                      onPageChanged: (v){
-                        if(is_playing) {
-                          playerSubscription.cancel();
-                          flutterSound.stopPlayer();
-                          setState(() {
-                            is_playing = false;
-                          });
+    return WillPopScope(
+      onWillPop: () {
+        if(is_playing) {
+          playerSubscription.cancel();
+          flutterSound.stopPlayer();
+          setState(() {
+            is_playing = false;
+          });
+        }
+        return Future.value(true);
+      },
+      child: Scaffold(
+          appBar: AppBar(
+            backgroundColor: AppColors.primary_color,
+            title: Text(AppStrings.app_label),
+            actions: <Widget>[
+              IconButton(
+                  onPressed: () {
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return showAlertDialog(context, task.id);
                         }
-                      },
-                      children: media_items,
-                    ),
-                    align: IndicatorAlign.bottom,
-                    length: media_items.length,
-                    padding: EdgeInsets.only(bottom: 20.0),
-                    size: 10.0,
-                    indicatorSpace: 10.0,
-                    indicatorSelectorColor: Colors.white,
-                    indicatorColor: Colors.grey,
+                    ).then((val){
+                      if(is_deleted){
+                        Navigator.pop(context, true);
+                      }
+                    });
+                  },
+                  icon: Icon(
+                    Icons.delete,
+                    size: 25.0,
+                    color: Colors.white,
                   )
-                ],
               ),
-            ),
-            Expanded(
-              flex: 5,
-              child: Container(
-                child: ListView.builder(
-                    padding: EdgeInsets.only(top: 0.0),
-                    itemCount: task.predictResponse.predictions.labels.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      //final item = task.results.predictions[index];
-                      var background_color;
-                      var text_color;
-                      var iconContainer;
-
-                      if(index == 0){
-
-                        background_color = AppColors.primary_dark_color;
-
-                        var icon;
-
-                        if(task.predictResponse.predictions.probabilities[index] <= 0.3){
-                          text_color = Colors.red;
-                          icon = Icon(
-                            Icons.warning,
-                            color: Colors.white,
-                          );
-                        }else{
-                          text_color = Colors.white;
-                          icon = Icon(
-                            Icons.star,
-                            color: Colors.orangeAccent,
-                          );
-                        }
-                        iconContainer = Container(
-                          child: icon,
-                        );
-
-                      }else{
-                        text_color = AppColors.primary_dark_color;
-                        background_color = Colors.transparent;
-                        iconContainer = Container();
-                      }
-
-                      return Container(
-                        color: background_color,
-                        child: Padding(
-                          padding: EdgeInsets.all(10.0),
-                          child: Row(
-                            children: <Widget>[
-                              Expanded(
-                                  flex: 17,
-                                  child: iconContainer
-                              ),
-                              Expanded(
-                                flex: 50,
-                                child: Text(
-                                  task.predictResponse.predictions.labels[index],
-                                  style: TextStyle(
-                                    fontSize: 18.0,
-                                    color: text_color,
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                flex: 13,
-                                child:
-                                GestureDetector(
-                                  onTap: () {
-                                    //print("Tapped info icon");
-                                    _launchURL(task.predictResponse.predictions.links.wikipedia[index]);
-                                  },
-                                  child: Icon(
-                                    Icons.info,
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                flex: 13,
-                                child:
-                                GestureDetector(
-                                  onTap: () {
-                                    //print("Tapped info icon");
-                                    _launchURL(task.predictResponse.predictions.links.googleImages[index]);
-                                  },
-                                  child: Icon(
-                                    Icons.image,
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                flex: 20,
-                                child: Text(
-                                  (task.predictResponse.predictions.probabilities[index] * 100).toStringAsFixed(2) + " %",
-                                  textAlign: TextAlign.right,
-                                  style: TextStyle(
-                                      fontSize: 18.0,
-                                      color: text_color
-                                  ),
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                      );
-                    }
+            ],
+          ),
+          body: Column(
+            children: <Widget>[
+              Expanded(
+                flex: 5,
+                child: Stack(
+                  children: <Widget>[
+                    PageIndicatorContainer(
+                      pageView: PageView(
+                        onPageChanged: (v){
+                          if(is_playing) {
+                            playerSubscription.cancel();
+                            flutterSound.stopPlayer();
+                            setState(() {
+                              is_playing = false;
+                            });
+                          }
+                        },
+                        children: media_items,
+                      ),
+                      align: IndicatorAlign.bottom,
+                      length: media_items.length,
+                      padding: EdgeInsets.only(bottom: 20.0),
+                      size: 10.0,
+                      indicatorSpace: 10.0,
+                      indicatorSelectorColor: Colors.white,
+                      indicatorColor: Colors.grey,
+                    )
+                  ],
                 ),
               ),
-            )
-          ],
-        )
+              Expanded(
+                flex: 5,
+                child: Container(
+                  child: ListView.builder(
+                      padding: EdgeInsets.only(top: 0.0),
+                      itemCount: task.predictResponse.predictions.labels.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        //final item = task.results.predictions[index];
+                        var background_color;
+                        var text_color;
+                        var iconContainer;
+
+                        if(index == 0){
+
+                          background_color = AppColors.primary_dark_color;
+
+                          var icon;
+
+                          if(task.predictResponse.predictions.probabilities[index] <= 0.3){
+                            text_color = Colors.red;
+                            icon = Icon(
+                              Icons.warning,
+                              color: Colors.white,
+                            );
+                          }else{
+                            text_color = Colors.white;
+                            icon = Icon(
+                              Icons.star,
+                              color: Colors.orangeAccent,
+                            );
+                          }
+                          iconContainer = Container(
+                            child: icon,
+                          );
+
+                        }else{
+                          text_color = AppColors.primary_dark_color;
+                          background_color = Colors.transparent;
+                          iconContainer = Container();
+                        }
+
+                        return Container(
+                          color: background_color,
+                          child: Padding(
+                            padding: EdgeInsets.all(10.0),
+                            child: Row(
+                              children: <Widget>[
+                                Expanded(
+                                    flex: 17,
+                                    child: iconContainer
+                                ),
+                                Expanded(
+                                  flex: 50,
+                                  child: Text(
+                                    task.predictResponse.predictions.labels[index],
+                                    style: TextStyle(
+                                      fontSize: 18.0,
+                                      color: text_color,
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 13,
+                                  child:
+                                  GestureDetector(
+                                    onTap: () {
+                                      //print("Tapped info icon");
+                                      _launchURL(task.predictResponse.predictions.links.wikipedia[index]);
+                                    },
+                                    child: Icon(
+                                      Icons.info,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 13,
+                                  child:
+                                  GestureDetector(
+                                    onTap: () {
+                                      //print("Tapped info icon");
+                                      _launchURL(task.predictResponse.predictions.links.googleImages[index]);
+                                    },
+                                    child: Icon(
+                                      Icons.image,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 20,
+                                  child: Text(
+                                    (task.predictResponse.predictions.probabilities[index] * 100).toStringAsFixed(2) + " %",
+                                    textAlign: TextAlign.right,
+                                    style: TextStyle(
+                                        fontSize: 18.0,
+                                        color: text_color
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                        );
+                      }
+                  ),
+                ),
+              )
+            ],
+          )
+      ),
     );
   }
 
@@ -223,7 +236,7 @@ class ResultPageState extends State<ResultPage> {
       imagesWidgets.add(
         //Image.asset(ip)
           PhotoView(
-            imageProvider: AssetImage(ip),
+            imageProvider: FileImage(File(ip)),
             backgroundDecoration: BoxDecoration(color: Colors.white),
             minScale: PhotoViewComputedScale.contained,
             maxScale: PhotoViewComputedScale.contained * 1.8,

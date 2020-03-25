@@ -71,6 +71,17 @@ class HistoryPageState extends State<HistoryPage> with AutomaticKeepAliveClientM
   List<Widget> buildGridTiles(List<Task> tasks){
     return List<Container>.generate(tasks.length,
             (int index){
+      Widget previewImage = Container();
+      if(tasks[index].media_input_type == "audio") {
+        previewImage = Icon(Icons.music_note, size: 220, color: Colors.grey[200]);
+      }else if(tasks[index].media_input_type == "image") {
+        previewImage = FadeInImage(
+          fit: BoxFit.cover,
+          width: double.infinity,
+          placeholder: MemoryImage(kTransparentImage),
+          image: FileImage(File(tasks[index].file_paths[0])),
+        );
+      }
           return Container(
             child: GestureDetector(
               onTap: () {
@@ -87,12 +98,7 @@ class HistoryPageState extends State<HistoryPage> with AutomaticKeepAliveClientM
               },
               child: Stack(
                 children: <Widget>[
-                  FadeInImage(
-                      fit: BoxFit.cover,
-                      width: double.infinity,
-                      placeholder: MemoryImage(kTransparentImage),
-                      image: FileImage(File(tasks[index].file_paths[0]))
-                  ),
+                  previewImage,
                   Align(
                     alignment: Alignment.bottomCenter,
                     child: Container(
