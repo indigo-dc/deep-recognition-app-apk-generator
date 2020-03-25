@@ -13,7 +13,7 @@ class AppStrings {
   static String post_endpoint = "models/imgclas/predict";
   //static String api_url_def = "http://ribes-230.man.poznan.pl:443/";
   //static String post_endpoint_def = "models/plant_classification/predict";
-  static String delete_alert_content = "The image will be deleted. Are you sure?";
+  static String delete_alert_content = "Prediction will be deleted. Are you sure?";
   static String no = "NO";
   static String yes = "YES";
   static String no_history = "No history";
