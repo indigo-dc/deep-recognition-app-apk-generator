@@ -73,7 +73,16 @@ class HistoryPageState extends State<HistoryPage> with AutomaticKeepAliveClientM
             (int index){
       Widget previewImage = Container();
       if(tasks[index].media_input_type == "audio") {
-        previewImage = Icon(Icons.music_note, size: 220, color: Colors.grey[200]);
+        previewImage = Align(
+          alignment: Alignment.center,
+          child: FittedBox(
+              fit: BoxFit.cover,
+              child: Icon(
+                  Icons.music_note,
+                  size: 250,
+                  color: Colors.grey[200]
+              )),
+        );
       }else if(tasks[index].media_input_type == "image") {
         previewImage = FadeInImage(
           fit: BoxFit.cover,

@@ -258,7 +258,9 @@ class ResultPageState extends State<ResultPage> {
           ),
           Align(
               alignment: Alignment.bottomCenter,
-              child: Text(path.basename(ap))
+              child: Text(
+                  path.basename(ap),
+                  textAlign: TextAlign.center)
           ),
           GestureDetector(
             onTap: () {
