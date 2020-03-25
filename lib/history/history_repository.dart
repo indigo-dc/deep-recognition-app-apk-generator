@@ -3,12 +3,12 @@ import 'package:deep_app/utils/offline_storage.dart';
 
 class HistoryRepository{
 
-  /*Future<List<Task>> getTasks() async{
+  Future<List<Task>> getTasks() async{
     var taskslist = await OfflineStorage.getList();
     return taskslist.tasks;
   }
 
-  Future<Task> addTask(List <String> image_paths, Results results) async{
+  Future<Task> addTask(List <String> file_paths, PredictResponse predictResponse, String mediaInputType) async{
     var taskslist = await OfflineStorage.getList();
     var id = 0;
     for(Task t in taskslist.tasks){
@@ -17,7 +17,7 @@ class HistoryRepository{
       }
     }
     id = id + 1;
-    final task = Task(id: id, image_paths: image_paths, results: results);
+    final task = Task(id: id, file_paths: file_paths, predictResponse: predictResponse, media_input_type: mediaInputType);
     taskslist.tasks.add(task);
     OfflineStorage.putList(taskslist);
     return task;
@@ -33,5 +33,5 @@ class HistoryRepository{
       }
     }
     return false;
-  }*/
+  }
 }

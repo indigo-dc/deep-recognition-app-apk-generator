@@ -79,7 +79,6 @@ class HistoryPageState extends State<HistoryPage> with AutomaticKeepAliveClientM
                   if(val == true){
                     loadTasks().then((t){
                       setState(() {
-                        //print(t);
                         this.tasks = t;
                       });
                     });
@@ -101,7 +100,7 @@ class HistoryPageState extends State<HistoryPage> with AutomaticKeepAliveClientM
                       width: double.infinity,
                       padding: EdgeInsets.all(5.0),
                       child: Text(
-                          "pred[0]",
+                          getTaskTitleString(tasks[index].predictResponse),
                         //PredictionTitleManager.getTitleForPrediction(/*tasks[index].results.predictions[0]*/ ),
                         style: TextStyle(
                             color: Colors.white
@@ -119,17 +118,17 @@ class HistoryPageState extends State<HistoryPage> with AutomaticKeepAliveClientM
 
   Future<List<Task>> loadTasks() async{
     HistoryRepository historyRepository = HistoryRepository();
-    //final tasks = await historyRepository.getTasks();
+    final tasks = await historyRepository.getTasks();
     return tasks;
   }
 
-  /*String getTaskTitleString(Prediction prediction){
-    if(prediction.probability < 0.3){
-      return prediction.label + " (!)";
+  String getTaskTitleString(PredictResponse predictResponse){
+    if(predictResponse.predictions.probabilities[0] < 0.3){
+      return predictResponse.predictions.labels[0] + " (!)";
     }else{
-      return prediction.label;
+      return predictResponse.predictions.labels[0];
     }
-  }*/
+  }
 
   @override
   bool get wantKeepAlive => false;

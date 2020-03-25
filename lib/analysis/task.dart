@@ -34,9 +34,13 @@ class PredictResponse {
 
   PredictResponse.fromJson(Map<String, dynamic> json) {
     status = json['status'];
-    predictions = json['predictions'] != null
-        ? new Predictions.fromJson(json['predictions'])
-        : null;
+    if(json['predictions'] is List<dynamic>) {
+      predictions = Predictions.fromJson(json['predictions'][0]);
+    } else {
+      predictions = json['predictions'] != null
+          ? Predictions.fromJson(json['predictions'])
+          : null;
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -54,24 +58,32 @@ class Predictions {
   List<double> probabilities;
   List<String> labelsInfo;
   Links links;
+  //String title;
+  //List<String> labelIds;
 
-  Predictions({this.labels, this.probabilities, this.labelsInfo, this.links});
+  Predictions({this.labels, this.probabilities, this.labelsInfo, this.links/*, this.title*/});
 
   Predictions.fromJson(Map<String, dynamic> json) {
     labels = json['labels'].cast<String>();
     probabilities = json['probabilities'].cast<double>();
-    labelsInfo = json['labels_info'].cast<String>();
+    labelsInfo = json['labels_info'] != null ? json['labels_info'].cast<String>() : null;
     links = json['links'] != null ? new Links.fromJson(json['links']) : null;
+    //title = json['title'] != null ? json['title'] : null;
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['labels'] = this.labels;
     data['probabilities'] = this.probabilities;
-    data['labels_info'] = this.labelsInfo;
+    if(this.labelsInfo != null) {
+      data['labels_info'] = this.labelsInfo;
+    }
     if (this.links != null) {
       data['links'] = this.links.toJson();
     }
+    /*if(this.title != null) {
+      data['title'] = title;
+    }*/
     return data;
   }
 }

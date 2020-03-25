@@ -844,8 +844,10 @@ class AnalysisPageState extends State<AnalysisPage>
 
       recognitionApi.postPredictUrl(queryMap)
           .then((val) {
-            var filePaths = data_items.map((pi) => pi.path).toList();
-            widget.onPush(Task(file_paths: filePaths, predictResponse: val, media_input_type: media_input_type));
+              var filePaths = data_items.map((pi) => pi.path).toList();
+              addTaskToRepository(filePaths, val, media_input_type).then((t) {
+              widget.onPush(Task(file_paths: filePaths, predictResponse: val, media_input_type: media_input_type));
+            });
           })
           .catchError((error) {
             showSnackbar(error.toString());
@@ -853,8 +855,10 @@ class AnalysisPageState extends State<AnalysisPage>
     } else if(dataInputType == "data") {
       recognitionApi.postPredictData(dataInputs, queryMap)
           .then((val){
-            var filePaths = data_items.map((pi) => pi.path).toList();
-            widget.onPush(Task(file_paths: filePaths, predictResponse: val, media_input_type: media_input_type));
+              var filePaths = data_items.map((pi) => pi.path).toList();
+              addTaskToRepository(filePaths, val, media_input_type).then((t) {
+              widget.onPush(Task(file_paths: filePaths, predictResponse: val, media_input_type: media_input_type));
+            });
           })
           .catchError((e) {
             showSnackbar(e.toString());
@@ -1027,11 +1031,10 @@ class AnalysisPageState extends State<AnalysisPage>
     });
   }*/
 
-  /*Future<Task> addTaskToRepository(
-      List<String> photoPaths, Results results) async {
+  Future<Task> addTaskToRepository(List<String> filePaths, PredictResponse predictResponse, String mediaInputType) async {
     HistoryRepository hr = HistoryRepository();
-    return await hr.addTask(photoPaths, results);
-  }*/
+    return await hr.addTask(filePaths, predictResponse, mediaInputType);
+  }
 
 
   //used code
