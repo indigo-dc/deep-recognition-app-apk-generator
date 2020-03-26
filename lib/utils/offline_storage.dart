@@ -9,8 +9,6 @@ class OfflineStorage{
    static putList(TasksList tasksList) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final myJsonStr = jsonEncode(tasksList.toJson());
-    //print("json encoded length: " + myJsonStr.length.toString());
-    //print(tasksList.toJson());
     await prefs.setString('tasks', myJsonStr);
   }
 
@@ -18,14 +16,10 @@ class OfflineStorage{
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final tasksJson = prefs.getString("tasks");
     if(tasksJson != null){
-      //print("json decoded length: " + tasksJson.length.toString());
       Map<String, dynamic> value = jsonDecode(tasksJson);
-      //print(value);
       TasksList tasksList = TasksList.fromJson(value);
-      //print(tasksList);
       return tasksList;
     }else{
-      //print("json decoded length: empty");
       return new TasksList(tasks: []);
     }
   }

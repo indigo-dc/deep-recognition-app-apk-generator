@@ -58,8 +58,6 @@ class Predictions {
   List<double> probabilities;
   List<String> labelsInfo;
   Links links;
-  //String title;
-  //List<String> labelIds;
 
   Predictions({this.labels, this.probabilities, this.labelsInfo, this.links/*, this.title*/});
 
@@ -68,7 +66,6 @@ class Predictions {
     probabilities = json['probabilities'].cast<double>();
     labelsInfo = json['labels_info'] != null ? json['labels_info'].cast<String>() : null;
     links = json['links'] != null ? new Links.fromJson(json['links']) : null;
-    //title = json['title'] != null ? json['title'] : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -81,9 +78,6 @@ class Predictions {
     if (this.links != null) {
       data['links'] = this.links.toJson();
     }
-    /*if(this.title != null) {
-      data['title'] = title;
-    }*/
     return data;
   }
 }
@@ -106,88 +100,3 @@ class Links {
     return data;
   }
 }
-
-/*class Results{
-  final String status;
-  final List<Prediction> predictions;
-
-  Results({this.status, this.predictions});
-
-  factory Results.fromJson(Map<String, dynamic> json) {
-    var list = json["predictions"] as List;
-    List<Prediction> predictions = list.map((i) =>
-    Prediction.fromJson(i)).toList();
-    return Results(
-      status: json["status"],
-      predictions: predictions
-    );
-  }
-
-  Map<String, dynamic> toJson() =>
-      {
-        "status": status, "predictions": predictions.map((p) => p.toJson()).toList()
-      };
-}
-
-class Prediction{
-  final Info info;
-  final int label_id;
-  final double probability;
-  final String label;
-
-  Prediction({this.info, this.label_id, this.probability, this.label});
-
-  factory Prediction.fromJson(Map<String, dynamic> json) {
-    return Prediction(
-      info: Info.fromJson(json["info"]),
-      label_id: json["label_id"],
-      probability: json["probability"],
-      label: json["label"]
-    );
-  }
-
-  Map toJson() => {"info": info.toJson(), "label_id": label_id, "probability" : probability, "label" : label};
-}
-
-class Info{
-  final String metadata;
-  final Links links;
-
-  Info({this.metadata, this.links});
-
-  factory Info.fromJson(Map<String, dynamic> json) {
-    //var list = json["links"] as List;
-    //List<Links> links = list.map((i) =>
-    //Links.fromJson(i)).toList();
-    return Info(
-        metadata: json["metadata"],
-        links: Links.fromJson(json["links"]),
-    );
-  }
-
-  Map<String, dynamic> toJson() =>
-      {
-        "metadata": metadata, "links": links.toJson()
-      };
-
-}
-
-class Links{
-  final String wikipedia;
-  final String google_images;
-
-  Links({this.wikipedia, this.google_images});
-
-  factory Links.fromJson(Map<String, dynamic> json) {
-    return Links(
-      wikipedia: json["Wikipedia"],
-      google_images: json["Google images"]
-    );
-  }
-
-  Map<String, dynamic> toJson() =>
-      {
-         "Wikipedia": wikipedia, "Google images": google_images,
-      };
-
-}*/

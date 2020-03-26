@@ -105,7 +105,7 @@ class ResultPageState extends State<ResultPage> {
                       ),
                       align: IndicatorAlign.bottom,
                       length: media_items.length,
-                      padding: EdgeInsets.only(bottom: 20.0),
+                      padding: EdgeInsets.only(bottom: 30),
                       size: 10.0,
                       indicatorSpace: 10.0,
                       indicatorSelectorColor: Colors.white,
@@ -333,7 +333,6 @@ class ResultPageState extends State<ResultPage> {
   Future<bool> _deleteTaskFromRepository(int taskId) async{
     HistoryRepository historyRepository = HistoryRepository();
     return await historyRepository.removeTask(taskId);
-    return true;
   }
 
 }

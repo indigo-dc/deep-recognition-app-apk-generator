@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ffi';
 
 import 'package:deep_app/analysis/post.dart';
@@ -45,8 +46,6 @@ class AnalysisPageState extends State<AnalysisPage>
 
   String image_preview_path;
 
-  bool start_task_visibility;
-
   ImagePickerHelper imagePickerHelper;
 
   Post post;
@@ -58,11 +57,10 @@ class AnalysisPageState extends State<AnalysisPage>
   Map query_values;
   Map query_controllers;
   FlutterSound flutterSound;
-  var playerSubscription;
+  StreamSubscription playerSubscription;
   bool urlAddButtonVisibility;
   TextEditingController urlController;
-
-  //FileManager fileManager;
+  bool is_analysis_in_progress;
 
   @override
   void initState() {
@@ -116,23 +114,10 @@ class AnalysisPageState extends State<AnalysisPage>
       appBar: AppBar(
         backgroundColor: AppColors.primary_color,
         title: Text(AppStrings.app_label),
-        /*actions: <Widget>[
-          Visibility(
-            visible: start_task_visibility,
-            child: IconButton(
-                onPressed: (onStartTaskPressed),
-                icon: Icon(
-                  Icons.play_arrow,
-                  size: 35.0,
-                  key: Key("startTaskIcon"),
-                )),
-          )
-        ],*/
       ),
       body: SingleChildScrollView(
         child: buildPageColumn(),
       ),
-      //body: getCustomColumn(),
     );
   }
 
@@ -179,9 +164,10 @@ class AnalysisPageState extends State<AnalysisPage>
         child: Align(
             alignment: Alignment.centerLeft,
             child: DropdownButton(
+                disabledHint: Text(current_data_input),
                 value: current_data_input,
                 items: items,
-                onChanged: changedDataInputType))));
+                onChanged: !is_analysis_in_progress ? changedDataInputType : null))));
 
     columns.add(Padding(
         padding: EdgeInsets.only(left: 20, top: 20),
@@ -214,7 +200,7 @@ class AnalysisPageState extends State<AnalysisPage>
       if (current_data_input == "data") {
         columns.add(Row(
           children: <Widget>[
-            buildRecorderButtonContainer(),
+            //buildRecorderButtonContainer(),
             buildAudioFileButtonContainer(),
           ],
         ));
@@ -249,7 +235,7 @@ class AnalysisPageState extends State<AnalysisPage>
       margin: EdgeInsets.only(top: 20.0),
       child: RaisedButton(
         color: AppColors.accent_color,
-        onPressed: isRequiredDataFilled() ? () => pressedAnalyseButton(current_data_input, data_items, query_values) : null ,
+        onPressed: isRequiredDataFilled() && !is_analysis_in_progress ? () => pressedAnalyseButton(current_data_input, data_items, query_values) : null,
         child: Text("Analyse"),
       ),
     ));
@@ -259,7 +245,7 @@ class AnalysisPageState extends State<AnalysisPage>
     );
   }
 
-  //input data buttons
+  //unused
   Container buildRecorderButtonContainer() {
     return Container(
         margin: EdgeInsets.only(left: 10.0),
@@ -285,19 +271,6 @@ class AnalysisPageState extends State<AnalysisPage>
             child: getButtonColumn(Icons.file_upload, "FILE", Colors.black)));
   }
 
-  /*Container buildAudioURLButtonContainer() {
-    return Container(
-      margin: EdgeInsets.only(left: 10.0),
-      child: RaisedButton(
-          key: Key("audioURLButton"),
-          color: Colors.transparent,
-          elevation: 0.0,
-          padding: EdgeInsets.all(10.0),
-          onPressed: pressedPickAudioFromURL,
-          child: getButtonColumn(Icons.web_asset, "URL", Colors.black
-          )),
-    );
-  }*/
   Container buildImageCameraButtonContainer() {
     return Container(
         margin: EdgeInsets.only(left: 10.0),
@@ -324,19 +297,6 @@ class AnalysisPageState extends State<AnalysisPage>
                 getButtonColumn(Icons.file_upload, "GALLERY", Colors.black)));
   }
 
-  /*Container buildImageURLButtonContainer() {
-    return Container(
-      margin: EdgeInsets.only(left: 10.0),
-      child: RaisedButton(
-          key: Key("imageURLButton"),
-          color: Colors.transparent,
-          elevation: 0.0,
-          padding: EdgeInsets.all(10.0),
-          onPressed: pressedPickImageFromURL,
-          child: getButtonColumn(Icons.web_asset, "URL", Colors.black)),
-    );
-  }*/
-
   Container buildUrlAudioInput() {
     return Container(
         margin: EdgeInsets.only(left: 20.0, right: 20.0),
@@ -345,6 +305,7 @@ class AnalysisPageState extends State<AnalysisPage>
             Expanded(
               flex: 8,
               child: TextField(
+                enabled: !is_analysis_in_progress,
                 onChanged: (text) {
                   if (text.isEmpty) {
                     setState(() {
@@ -357,7 +318,7 @@ class AnalysisPageState extends State<AnalysisPage>
                   }
                 },
                 decoration:
-                InputDecoration(hintText: "https://url-of-audio-file"),
+                    InputDecoration(hintText: "https://url-of-audio-file"),
                 controller: urlController,
               ),
             ),
@@ -365,20 +326,20 @@ class AnalysisPageState extends State<AnalysisPage>
               flex: 2,
               child: urlAddButtonVisibility
                   ? Align(
-                alignment: Alignment.center,
-                child: RaisedButton(
-                  child: Icon(
-                    Icons.add_circle,
-                    color: AppColors.accent_color,
-                    size: 30,
-                  ),
-                  elevation: 0.0,
-                  onPressed: () {
-                    pressedPickAudioFromURL(urlController.text);
-                  },
-                  color: Colors.transparent,
-                ),
-              )
+                      alignment: Alignment.center,
+                      child: RaisedButton(
+                        child: Icon(
+                          Icons.add_circle,
+                          color: AppColors.accent_color,
+                          size: 30,
+                        ),
+                        elevation: 0.0,
+                        onPressed: () {
+                          pressedPickAudioFromURL(urlController.text);
+                        },
+                        color: Colors.transparent,
+                      ),
+                    )
                   : Container(),
             )
           ],
@@ -393,6 +354,7 @@ class AnalysisPageState extends State<AnalysisPage>
             Expanded(
               flex: 8,
               child: TextField(
+                enabled: !is_analysis_in_progress,
                 onChanged: (text) {
                   if (text.isEmpty) {
                     setState(() {
@@ -405,7 +367,7 @@ class AnalysisPageState extends State<AnalysisPage>
                   }
                 },
                 decoration:
-                InputDecoration(hintText: "https://url-of-image-file"),
+                    InputDecoration(hintText: "https://url-of-image-file"),
                 controller: urlController,
               ),
             ),
@@ -413,20 +375,20 @@ class AnalysisPageState extends State<AnalysisPage>
               flex: 2,
               child: urlAddButtonVisibility
                   ? Align(
-                alignment: Alignment.center,
-                child: RaisedButton(
-                  child: Icon(
-                    Icons.add_circle,
-                    color: AppColors.accent_color,
-                    size: 30,
-                  ),
-                  elevation: 0.0,
-                  onPressed: () {
-                    pressedPickImageFromURL(urlController.text);
-                  },
-                  color: Colors.transparent,
-                ),
-              )
+                      alignment: Alignment.center,
+                      child: RaisedButton(
+                        child: Icon(
+                          Icons.add_circle,
+                          color: AppColors.accent_color,
+                          size: 30,
+                        ),
+                        elevation: 0.0,
+                        onPressed: () {
+                          pressedPickImageFromURL(urlController.text);
+                        },
+                        color: Colors.transparent,
+                      ),
+                    )
                   : Container(),
             )
           ],
@@ -458,27 +420,10 @@ class AnalysisPageState extends State<AnalysisPage>
             }).toList()));
   }
 
-  //unused
-  /*Column getPickColumn() {
-    return Column(
-      children: <Widget>[
-        buildPhotosManagementBar(),
-        buildPreviewImageExpanded(image_preview_path)
-      ],
-    );
-  }*/
-
   Stack buildImageStack(PhotoItem item) {
     return Stack(
       children: <Widget>[
         GestureDetector(
-          /*onTap: () {
-            if(image_preview_path != item.path){
-              setState(() {
-                image_preview_path = item.path;
-              });
-            }
-          },*/
           child: Container(
             decoration: BoxDecoration(
               image: DecorationImage(
@@ -489,20 +434,11 @@ class AnalysisPageState extends State<AnalysisPage>
         Align(
           alignment: Alignment.topRight,
           child: GestureDetector(
-              onTap: () {
+              onTap: !is_analysis_in_progress ? () {
                 setState(() {
                   data_items.remove(item);
-                  /*final lastItem = data_items.last;
-                  if(lastItem is PhotoItem){
-                    image_preview_path = lastItem.path;
-                  }else{
-                    data_items.add(InfoItem(AppStrings.select_photo_info));
-                    start_task_visibility = false;
-                    image_preview_path = AppStrings.preview_default_img_path;
-                  }
-                */
                 });
-              },
+              } : null,
               child: Container(
                   height: 25.0,
                   width: 25.0,
@@ -513,7 +449,7 @@ class AnalysisPageState extends State<AnalysisPage>
                     alignment: Alignment.center,
                     child: Icon(
                       Icons.clear,
-                      color: Colors.red,
+                      color: !is_analysis_in_progress ? Colors.red : Colors.grey,
                       size: 18,
                     ),
                   ))),
@@ -526,7 +462,7 @@ class AnalysisPageState extends State<AnalysisPage>
     return Stack(
       children: <Widget>[
         GestureDetector(
-          onTap: () async {
+          onTap: !is_analysis_in_progress ? () async {
             if (!item.is_playing) {
               File fin = await File(item.path);
               flutterSound.startPlayer(fin.path).then((path) {
@@ -547,7 +483,7 @@ class AnalysisPageState extends State<AnalysisPage>
                 });
               });
             }
-          },
+          } : null,
           child: Container(
               alignment: Alignment.center,
               child: Icon(Icons.music_note, size: 70, color: Colors.grey[200])),
@@ -555,7 +491,7 @@ class AnalysisPageState extends State<AnalysisPage>
         Align(
           alignment: Alignment.topRight,
           child: GestureDetector(
-              onTap: () {
+              onTap: !is_analysis_in_progress ? () {
                 if (item.is_playing) {
                   flutterSound.stopPlayer().then((val) {
                     playerSubscription.cancel();
@@ -569,7 +505,7 @@ class AnalysisPageState extends State<AnalysisPage>
                     data_items.remove(item);
                   });
                 }
-              },
+              } : null,
               child: Container(
                   height: 20.0,
                   width: 20.0,
@@ -580,7 +516,7 @@ class AnalysisPageState extends State<AnalysisPage>
                     alignment: Alignment.center,
                     child: Icon(
                       Icons.clear,
-                      color: Colors.red,
+                      color: !is_analysis_in_progress ? Colors.red : Colors.grey,
                       size: 18,
                     ),
                   ))),
@@ -592,6 +528,7 @@ class AnalysisPageState extends State<AnalysisPage>
               path.basename(item.path),
               textAlign: TextAlign.left,
               overflow: TextOverflow.ellipsis,
+              style: TextStyle(color: !is_analysis_in_progress ? Colors.black : Colors.grey),
             )),
         Visibility(
           visible: item.is_playing,
@@ -616,7 +553,8 @@ class AnalysisPageState extends State<AnalysisPage>
   }
 
   Column buildQueryParameterTextInputColumn(Parameter p) {
-    query_controllers.putIfAbsent(p, () => TextEditingController()..text = query_values[p]);
+    query_controllers.putIfAbsent(
+        p, () => TextEditingController()..text = query_values[p]);
     return Column(
       children: <Widget>[
         Align(
@@ -629,7 +567,6 @@ class AnalysisPageState extends State<AnalysisPage>
             alignment: Alignment.centerLeft,
             child: TextField(
               controller: query_controllers[p],
-              //initialValue: query_values[p],
             ))
       ],
     );
@@ -654,9 +591,7 @@ class AnalysisPageState extends State<AnalysisPage>
           child: DropdownButton(
             items: enum_items,
             value: query_values[p],
-            onChanged: (selectedItem) {
-              changedQueryEnumValue(selectedItem, p);
-            },
+            onChanged: !is_analysis_in_progress ? (selectedItem) => changedQueryEnumValue(selectedItem, p) : null,
           ),
         )
       ],
@@ -666,12 +601,7 @@ class AnalysisPageState extends State<AnalysisPage>
   //setting defauld data to page when it starts
   void setDefaultData() {
     image_preview_path = AppStrings.preview_default_img_path;
-    data_items = [
-      //ButtonItem(AppStrings.camera),
-      //ButtonItem(AppStrings.file),
-      //InfoItem(AppStrings.select_photo_info),
-    ];
-    start_task_visibility = false;
+    data_items = [];
 
     media_input_type = "";
     data_inputs = List();
@@ -681,6 +611,7 @@ class AnalysisPageState extends State<AnalysisPage>
     urlAddButtonVisibility = false;
     urlController = TextEditingController();
     query_controllers = Map();
+    is_analysis_in_progress = false;
   }
 
   //method when user chose different data input type
@@ -695,7 +626,6 @@ class AnalysisPageState extends State<AnalysisPage>
 
   //method when user chose different enum value for query parameter
   void changedQueryEnumValue(String selectedItem, Parameter query_paremeter) {
-    //var key = query_values.keys.firstWhere((k) => query_values[k] == selectedItem, orElse: () => null);
     setState(() {
       query_values[query_paremeter] = selectedItem;
     });
@@ -705,12 +635,11 @@ class AnalysisPageState extends State<AnalysisPage>
     try {
       final path = await widget.imagePickerHelper
           .getPathOfPickedImage(ImageSource.gallery);
-      //print('Picked image path: $path');
       final newPath = await FileManager.copyFileAndGetPath(path);
 
       ImageProperties properties =
           await FlutterNativeImage.getImageProperties(newPath);
-      print("Analysis page: " + properties.width.toString());
+      //print("Analysis page: " + properties.width.toString());
 
       var imagePath;
 
@@ -725,17 +654,6 @@ class AnalysisPageState extends State<AnalysisPage>
       setState(() {
         data_items.add(PhotoItem(imagePath));
       });
-
-      /*if(imagePath.isNotEmpty && data_items.length >= 3){
-        if(data_items[2] is InfoItem){
-          data_items.removeLast();
-        }
-        setState(() {
-          image_preview_path = imagePath;
-          data_items.add(PhotoItem(imagePath));
-          start_task_visibility = true;
-        });
-      }*/
     } catch (e) {
       print('Error: $e');
     }
@@ -750,7 +668,7 @@ class AnalysisPageState extends State<AnalysisPage>
 
       ImageProperties properties =
           await FlutterNativeImage.getImageProperties(newPath);
-      print("Analysis page: " + properties.width.toString());
+      //print("Analysis page: " + properties.width.toString());
 
       var imagePath;
 
@@ -771,7 +689,7 @@ class AnalysisPageState extends State<AnalysisPage>
   }
 
   void pressedPickImageFromURL(String url) async {
-    if(FileDownloader.isAcceptedImageFile(url)) {
+    if (FileDownloader.isAcceptedImageFile(url)) {
       String filePath = await FileDownloader.downloadFile(url);
       if (filePath != null) {
         urlController.clear();
@@ -789,7 +707,6 @@ class AnalysisPageState extends State<AnalysisPage>
 
   void pressedPickAudioFromRecorder() async {
     showSnackbar("Not implemented yet");
-    // widget.onPushRecorder();
   }
 
   void pressedPickAudioFromFile() async {
@@ -806,7 +723,7 @@ class AnalysisPageState extends State<AnalysisPage>
   }
 
   void pressedPickAudioFromURL(String url) async {
-    if(FileDownloader.isAcceptedAudioFile(url)) {
+    if (FileDownloader.isAcceptedAudioFile(url)) {
       String filePath = await FileDownloader.downloadFile(url);
       if (filePath != null) {
         urlController.clear();
@@ -822,112 +739,76 @@ class AnalysisPageState extends State<AnalysisPage>
     }
   }
 
-  void pressedAnalyseButton(String dataInputType, List dataInputs, Map queryValues) async {
+  Future pressedAnalyseButton(String dataInputType, List dataInputs, Map queryValues) async {
+    setState(() {
+      is_analysis_in_progress = true;
+    });
     RecognitionApi recognitionApi = RecognitionApi();
     Map<String, dynamic> queryMap = Map();
-    for(Parameter p in queryValues.keys) {
-      if(p.enum_ == null) {
+    for (Parameter p in queryValues.keys) {
+      if (p.enum_ == null) {
         queryMap.putIfAbsent(p.name, () => query_controllers[p].text);
       } else {
         queryMap.putIfAbsent(p.name, () => queryValues[p]);
       }
     }
-    if(dataInputType == "urls") {
+    if (dataInputType == "urls") {
       String urlsVal = "";
-      for(int i=0; i<dataInputs.length; i++) {
+      for (int i = 0; i < dataInputs.length; i++) {
         urlsVal = urlsVal + dataInputs[i].url;
-        if(i+1 < dataInputs.length) {
+        if (i + 1 < dataInputs.length) {
           urlsVal = urlsVal + ",";
         }
       }
       queryMap.putIfAbsent("urls", () => urlsVal);
 
-      recognitionApi.postPredictUrl(queryMap)
-          .then((val) {
-              var filePaths = data_items.map((pi) => pi.path).toList();
-              addTaskToRepository(filePaths, val, media_input_type).then((t) {
-              widget.onPush(Task(file_paths: filePaths, predictResponse: val, media_input_type: media_input_type));
-            });
-          })
-          .catchError((error) {
-            showSnackbar(error.toString());
-      });
-    } else if(dataInputType == "data") {
-      recognitionApi.postPredictData(dataInputs, queryMap)
-          .then((val){
-              var filePaths = data_items.map((pi) => pi.path).toList();
-              addTaskToRepository(filePaths, val, media_input_type).then((t) {
-              widget.onPush(Task(file_paths: filePaths, predictResponse: val, media_input_type: media_input_type));
-            });
-          })
-          .catchError((e) {
-            showSnackbar(e.toString());
+      recognitionApi.postPredictUrl(queryMap).then((val) {
+        var filePaths = data_items.map((pi) => pi.path).toList();
+        addTaskToRepository(filePaths, val, media_input_type).then((t) {
+          setState(() {
+            is_analysis_in_progress = false;
           });
+          widget.onPush(Task(
+              file_paths: filePaths,
+              predictResponse: val,
+              media_input_type: media_input_type));
+        });
+      }).catchError((error) {
+        showSnackbar(error.toString());
+        setState(() {
+          is_analysis_in_progress = false;
+        });
+      });
+    } else if (dataInputType == "data") {
+      recognitionApi.postPredictData(dataInputs, queryMap).then((val) {
+        var filePaths = data_items.map((pi) => pi.path).toList();
+        addTaskToRepository(filePaths, val, media_input_type).then((t) {
+          setState(() {
+            is_analysis_in_progress = false;
+          });
+          widget.onPush(Task(
+              file_paths: filePaths,
+              predictResponse: val,
+              media_input_type: media_input_type));
+        });
+      }).catchError((e) {
+        showSnackbar(e.toString());
+        setState(() {
+          is_analysis_in_progress = false;
+        });
+      });
     }
   }
 
   bool isRequiredDataFilled() {
-    if(data_items.length != 0) {
+    if (data_items.length != 0) {
       return true;
     } else {
       return false;
     }
   }
 
-
-  //old code
-  /*Container buildPhotosManagementBar() {
-    return Container(
-      height: 85.0,
-      width: double.infinity,
-      color: AppColors.accent_color,
-      child: ListView.builder(
-          scrollDirection: Axis.horizontal,
-          shrinkWrap: true,
-          physics: ClampingScrollPhysics(),
-          itemCount: data_items.length,
-          itemBuilder: (BuildContext context, int index) {
-            final item = data_items[index];
-
-            if (item is ButtonItem) {
-              if (item.text == AppStrings.camera) {
-                return RaisedButton(
-                    key: Key("cameraButton"),
-                    elevation: 0.0,
-                    padding: EdgeInsets.all(10.0),
-                    color: AppColors.accent_color,
-                    onPressed: pressedPickImageFromCamera,
-                    child: getButtonColumn(
-                        Icons.photo_camera, item.text, Colors.black));
-              } else if (item.text == AppStrings.file) {
-                return RaisedButton(
-                    key: Key("galleryButton"),
-                    elevation: 0.0,
-                    padding: EdgeInsets.all(10.0),
-                    color: AppColors.accent_color,
-                    onPressed: pressedPickImageFromGallery,
-                    child: getButtonColumn(
-                        Icons.file_upload, item.text, Colors.black));
-              }
-            } else if (item is InfoItem) {
-              return Container(
-                padding: EdgeInsets.all(5.0),
-                child: Material(
-                  color: AppColors.accent_color,
-                  child: Center(child: Text(item.text)),
-                ),
-              );
-            } else if (item is PhotoItem) {
-              return Container(
-                width: 85.0,
-                padding: EdgeInsets.all(5.0),
-                child: Material(elevation: 4.0, child: buildImageStack(item)),
-              );
-            }
-          }),
-    );
-  }*/
-
+  //unused
   Expanded buildPreviewImageExpanded(String path) {
     var pv;
 
@@ -983,14 +864,15 @@ class AnalysisPageState extends State<AnalysisPage>
     return Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
-          Icon(icon, color: color),
+          Icon(icon, color: !is_analysis_in_progress ? color : Colors.grey),
           Text(
             text,
-            style: TextStyle(color: color),
+            style: TextStyle(color: !is_analysis_in_progress ? color : Colors.grey),
           ),
         ]);
   }
 
+  //unused
   List<PhotoView> buildPhotoViewsList(List<String> imgPaths) {
     List<PhotoView> imagesWidgets = [];
 
@@ -1006,38 +888,12 @@ class AnalysisPageState extends State<AnalysisPage>
     return imagesWidgets;
   }
 
-  /*onStartTaskPressed() async {
-    controller.forward();
-
-    final photoPaths = ListItem.getPhotosPathsList(data_items);
-
-    String stringResponse = await MockRecognitionApi()
-        .postTask(photoPaths)
-        .catchError((Object error) {
-      setState(() {
-        controller.reset();
-        showSnackbar(error.toString());
-      });
-    });
-
-    final parsed = json.decode(stringResponse);
-    Results results = Results.fromJson(parsed);
-    controller.reset();
-    addTaskToRepository(photoPaths, results).then((t) {
-      setState(() {
-        setDefaultData();
-      });
-      widget.onPush(t);
-    });
-  }*/
-
-  Future<Task> addTaskToRepository(List<String> filePaths, PredictResponse predictResponse, String mediaInputType) async {
+  Future<Task> addTaskToRepository(List<String> filePaths,
+      PredictResponse predictResponse, String mediaInputType) async {
     HistoryRepository hr = HistoryRepository();
     return await hr.addTask(filePaths, predictResponse, mediaInputType);
   }
 
-
-  //used code
   showSnackbar(String text) {
     Scaffold.of(context).showSnackBar(SnackBar(
       content: Text(text),
