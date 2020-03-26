@@ -566,7 +566,9 @@ class AnalysisPageState extends State<AnalysisPage>
         Align(
             alignment: Alignment.centerLeft,
             child: TextField(
+              enabled: !is_analysis_in_progress,
               controller: query_controllers[p],
+              style: TextStyle(color: !is_analysis_in_progress ? Colors.black : Colors.grey),
             ))
       ],
     );
@@ -592,6 +594,7 @@ class AnalysisPageState extends State<AnalysisPage>
             items: enum_items,
             value: query_values[p],
             onChanged: !is_analysis_in_progress ? (selectedItem) => changedQueryEnumValue(selectedItem, p) : null,
+            disabledHint: Text(query_values[p]),
           ),
         )
       ],
@@ -767,6 +770,7 @@ class AnalysisPageState extends State<AnalysisPage>
         addTaskToRepository(filePaths, val, media_input_type).then((t) {
           setState(() {
             is_analysis_in_progress = false;
+            data_items.clear();
           });
           widget.onPush(Task(
               file_paths: filePaths,
@@ -785,6 +789,7 @@ class AnalysisPageState extends State<AnalysisPage>
         addTaskToRepository(filePaths, val, media_input_type).then((t) {
           setState(() {
             is_analysis_in_progress = false;
+            data_items.clear();
           });
           widget.onPush(Task(
               file_paths: filePaths,
