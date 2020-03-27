@@ -1,10 +1,10 @@
 {
-  "app_name": "TEST NAME",
-  "main_activity_label": "TEST LABEL",
+  "app_name": "DEEP IMAGE RECOGNITION",
+  "main_activity_label": "DEEP IMAGE RECOGNITION",
   "primary_color": "#8cadac",
   "primary_dark_color": "#255059",
   "accent_color": "#71c9ce",
   "version_name": "1.1",
-  "icon_image_url": "https://box.psnc.pl/f/6da9c7cffc/?raw=1",
-  "swagger_url": "http://192.168.0.21:5000/swagger.json"
+  "icon_image_url": "https://box.psnc.pl/f/43614fd6ca/?raw=1",
+  "swagger_url": "https://deepaas.cloud.ifca.es/api/v1/web/deepaas/deep-oc/image-classification-tf/swagger.json"
 }
