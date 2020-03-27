@@ -23,7 +23,6 @@ ANDROID_ICON_LAUNCHER_HDPI_PATH = '/android/app/src/main/res/mipmap-hdpi/ic_laun
 ANDROID_ICON_LAUNCHER_XHDPI_PATH = '/android/app/src/main/res/mipmap-xhdpi/ic_launcher_foreground.png'
 ANDROID_ICON_LAUNCHER_XXHDPI_PATH = '/android/app/src/main/res/mipmap-xxhdpi/ic_launcher_foreground.png'
 ANDROID_ICON_LAUNCHER_XXXHDPI_PATH = '/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_foreground.png'
-PREVIEW_IMAGE_PATH = '/assets/images/plant.png'
 ICON_PATH = '/assets/images/ic-launcher-web.png'
 PREDICT_JSON_PATH = "/assets/res/predict.json"
 
@@ -156,7 +155,7 @@ def argsExists(args):
 		return False
 
 def androidFilesExists(dir):
-	if (os.path.exists(dir + APP_CONSTANTS_PATH) and os.path.exists(dir + PREVIEW_IMAGE_PATH)):
+	if (os.path.exists(dir + APP_CONSTANTS_PATH)):
 		return True
 	else:
 		print('Wrong flutter project path')
@@ -210,15 +209,13 @@ def replaceData(dir, json_file_path):
 		with open(json_file_path) as json_file:
 			data = json.load(json_file)
 
-			if not (isUrl(data['main_activity_image_url']) and isImage(data['main_activity_image_url']) and isUrl(data['icon_image_url']) 
-				and isColor(data['primary_color']) and isColor(data['primary_dark_color']) and isColor(data['accent_color']) and isUrl(data['swagger_url'])):
+			if not (isUrl(data['icon_image_url']) and isColor(data['primary_color']) and isColor(data['primary_dark_color']) and isColor(data['accent_color']) and isUrl(data['swagger_url'])):
 				return False
 
-			if not (downloadFile(data['main_activity_image_url'], dir + DOWNLOADED_MAIN_ACTIVITY_IMAGE_PATH) and downloadFile(data['icon_image_url'], dir + DOWNLOADED_ICON_PATH)
-			 and downloadFile(data['swagger_url'], dir + "/swagger.json")):
+			if not (downloadFile(data['icon_image_url'], dir + DOWNLOADED_ICON_PATH) and downloadFile(data['swagger_url'], dir + "/swagger.json")):
 				return False
 
-			if not (isImageResolutionCorrect(dir + DOWNLOADED_MAIN_ACTIVITY_IMAGE_PATH, PREVIEW_IMAGE_RESOLUTION, PREVIEW_IMAGE_RESOLUTION) and isImageResolutionCorrect(dir + DOWNLOADED_ICON_PATH, ICON_IMAGE_RESOLUTION, ICON_IMAGE_RESOLUTION)):
+			if not isImageResolutionCorrect(dir + DOWNLOADED_ICON_PATH, ICON_IMAGE_RESOLUTION, ICON_IMAGE_RESOLUTION):
 				return False
 
 			predictEndpoint = extractPredictEndpoint(dir + "/swagger.json")
@@ -252,7 +249,7 @@ def replaceData(dir, json_file_path):
 			resizeAndMoveImage(dir + DOWNLOADED_ICON_PATH, dir + ANDROID_ICON_LAUNCHER_XXHDPI_PATH, ANDROID_ICON_LAUNCHER_XXHDPI_RESOLUTION, ANDROID_ICON_LAUNCHER_XXHDPI_RESOLUTION)
 			resizeAndMoveImage(dir + DOWNLOADED_ICON_PATH, dir + ANDROID_ICON_LAUNCHER_XXXHDPI_PATH, ANDROID_ICON_LAUNCHER_XXXHDPI_RESOLUTION, ANDROID_ICON_LAUNCHER_XXXHDPI_RESOLUTION)
 
-			moveFile(dir + DOWNLOADED_MAIN_ACTIVITY_IMAGE_PATH, dir + PREVIEW_IMAGE_PATH)
+			#moveFile(dir + DOWNLOADED_MAIN_ACTIVITY_IMAGE_PATH, dir + PREVIEW_IMAGE_PATH)
 			moveFile(dir + DOWNLOADED_ICON_PATH, dir + ICON_PATH)
 
 			return True

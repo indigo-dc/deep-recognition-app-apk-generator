@@ -1,14 +1,11 @@
 import 'package:deep_app/analysis/list_item.dart';
-import 'package:deep_app/utils/constants.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
 
   test('No PhotoItems test', () {
     List<ListItem> items = [
-      ButtonItem(AppStrings.camera),
-      ButtonItem(AppStrings.file),
-      InfoItem(AppStrings.select_photo_info),
+      AudioItem("test_audio1_path", false),
     ];
 
     var result = ListItem.getPhotosPathsList(items);
@@ -17,9 +14,6 @@ void main() {
 
   test('PhotoItems included test', () {
     List<ListItem> items = [
-      ButtonItem(AppStrings.camera),
-      ButtonItem(AppStrings.file),
-      InfoItem(AppStrings.select_photo_info),
       PhotoItem("test_photo1_path"),
       PhotoItem("test_photo2_path")
     ];
