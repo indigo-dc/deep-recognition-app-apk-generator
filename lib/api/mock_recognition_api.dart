@@ -1,15 +1,12 @@
-import 'package:flutter/services.dart' show rootBundle;
+import 'dart:io';
+
+import 'package:deep_app/analysis/task.dart';
+import 'package:deep_app/utils/assets_manager.dart';
 
 
 class MockRecognitionApi{
-
-  Future<String> postTask(List<String> photoPaths) async {
-    final response = loadAsset();
-    return response;
+  Future<PredictResponse> postPredictData(String responsePath) async {
+    final Map<String, dynamic> response = await AssetsManager.loadJsonFile(responsePath);
+    return PredictResponse.fromJson(response);
   }
-
-  Future<String> loadAsset() async {
-    return await rootBundle.loadString('assets/res/response_new_api');
-  }
-
 }

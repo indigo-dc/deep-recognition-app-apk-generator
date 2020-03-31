@@ -1,0 +1,42 @@
+{
+  "status": "OK",
+  "predictions": {
+    "labels": [
+      "valley",
+      "fountain",
+      "worm_fence",
+      "bison",
+      "lakeside"
+    ],
+    "probabilities": [
+      0.14576181769371033,
+      0.13216282427310944,
+      0.055426500737667084,
+      0.05423041060566902,
+      0.050852905958890915
+    ],
+    "labels_info": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "links": {
+      "Google Images": [
+        "https://www.google.es/search?tbm=isch&q=valley",
+        "https://www.google.es/search?tbm=isch&q=fountain",
+        "https://www.google.es/search?tbm=isch&q=worm_fence",
+        "https://www.google.es/search?tbm=isch&q=bison",
+        "https://www.google.es/search?tbm=isch&q=lakeside"
+      ],
+      "Wikipedia": [
+        "https://en.wikipedia.org/wiki/valley",
+        "https://en.wikipedia.org/wiki/fountain",
+        "https://en.wikipedia.org/wiki/worm_fence",
+        "https://en.wikipedia.org/wiki/bison",
+        "https://en.wikipedia.org/wiki/lakeside"
+      ]
+    }
+  }
+}

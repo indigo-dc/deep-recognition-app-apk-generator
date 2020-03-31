@@ -1,3 +1,4 @@
+import 'package:deep_app/analysis/post.dart';
 import 'package:deep_app/analysis/recorder_page.dart';
 import 'package:flutter/material.dart';
 import 'package:deep_app/app/bottom_navigation.dart';

@@ -225,7 +225,7 @@ def replaceData(dir, json_file_path):
 			
 			#remove backslashes
 			u_predict_path = re.search('v2\/models\/[a-z0-9_]+\/predict\/', predict_path).group()
-
+			
 			replaceLine(dir + APP_CONSTANTS_PATH, 'post_endpoint = \"(.+)\";', 'post_endpoint = \"' + u_predict_path + '\";')
 			replaceLine(dir + ANDROID_MANIFEST_PATH, 'android:label=\"(.+)\"', 'android:label=\"' + data['app_name'] + '\"')
 			replaceLine(dir + APP_CONSTANTS_PATH, 'app_label = \"(.+)\";', 'app_label = \"' + data['main_activity_label'] + '\";')

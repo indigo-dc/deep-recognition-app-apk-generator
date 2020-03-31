@@ -1,0 +1,64 @@
+{
+  "post": {
+    "responses": {
+      "400": {
+        "schema": {
+          "$ref": "#/definitions/Failure"
+        },
+        "description": null
+      },
+      "200": {
+        "schema": {
+          "$ref": "#/definitions/ModelPredictionResponse"
+        },
+        "description": null
+      }
+    },
+    "parameters": [
+      {
+        "in": "formData",
+        "name": "data",
+        "required": false,
+        "default": null,
+        "x-nullable": true,
+        "type": "file",
+        "description": "Select the image you want to classify."
+      },
+      {
+        "in": "query",
+        "name": "urls",
+        "required": false,
+        "type": "string",
+        "default": null,
+        "x-nullable": true,
+        "description": "Select an URL of the image you want to classify."
+      },
+      {
+        "in": "query",
+        "name": "timestamp",
+        "required": false,
+        "type": "string",
+        "default": "\"default_imagenet\"",
+        "description": "Model timestamp to use for prediction.\n\n<font color='#C5576B'> Group name: **testing**\nChoices: ['default_imagenet']\nType: str</font>",
+        "enum": [
+          "\"default_imagenet\""
+        ]
+      },
+      {
+        "in": "query",
+        "name": "ckpt_name",
+        "required": false,
+        "type": "string",
+        "default": "\"final_model.h5\"",
+        "description": "Checkpoint inside the timestamp to use for prediction.\n\n<font color='#C5576B'> Group name: **testing**\nType: str</font>"
+      }
+    ],
+    "tags": [
+      "models"
+    ],
+    "summary": "Make a prediction given the input data",
+    "produces": [
+      "application/json"
+    ]
+  }
+}

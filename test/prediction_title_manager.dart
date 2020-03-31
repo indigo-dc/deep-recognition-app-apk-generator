@@ -1,44 +1,29 @@
 import 'package:deep_app/analysis/task.dart';
+import 'package:deep_app/api/mock_recognition_api.dart';
 import 'package:deep_app/history/history_page.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 
 void main() {
+  test('Low probability test', () async {
+    WidgetsFlutterBinding.ensureInitialized();
 
-  test('Low probability test', () {
-    Prediction prediction = Prediction(
-        info: Info(
-            links: Links(
-                wikipedia: "https://www.google.es/search?q=Anethum+graveolens&tbm=isch",
-                google_images: "https://en.wikipedia.org/wiki/Anethum_graveolens"
-            ),
-            metadata: ""
-        ),
-        label_id: 999,
-        probability: 0.299,
-        label: "Aconitum napellus"
-    );
+    MockRecognitionApi mockRecognitionApi = MockRecognitionApi();
+    PredictResponse predictResponse = await mockRecognitionApi.postPredictData("assets/test/response_for_test_low.json");
 
-    var result =  PredictionTitleManager.getTitleForPrediction(prediction);
-    expect(result, "Aconitum napellus (!)");
+    var result = PredictionTitleManager.getTitleForPrediction(predictResponse);
+    expect(result, "valley (!)");
   });
 
 
-  test('High probability test', () {
-    Prediction prediction = Prediction(
-        info: Info(
-            links: Links(
-                wikipedia: "https://www.google.es/search?q=Anethum+graveolens&tbm=isch",
-                google_images: "https://en.wikipedia.org/wiki/Anethum_graveolens"
-            ),
-            metadata: ""
-        ),
-        label_id: 999,
-        probability: 0.3,
-        label: "Aconitum napellus"
-    );
+  test('High probability test', () async {
+    WidgetsFlutterBinding.ensureInitialized();
 
-    var result =  PredictionTitleManager.getTitleForPrediction(prediction);
-    expect(result, "Aconitum napellus");
+    MockRecognitionApi mockRecognitionApi = MockRecognitionApi();
+    PredictResponse predictResponse = await mockRecognitionApi.postPredictData("assets/test/response_for_test_high.json");
+
+    var result = PredictionTitleManager.getTitleForPrediction(predictResponse);
+    expect(result, "pot");
   });
 }

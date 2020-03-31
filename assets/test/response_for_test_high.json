@@ -1,0 +1,42 @@
+{
+  "status": "OK",
+  "predictions": {
+    "labels": [
+      "pot",
+      "strawberry",
+      "hip",
+      "buckeye",
+      "leaf_beetle"
+    ],
+    "probabilities": [
+      0.5555011630058289,
+      0.08250097930431366,
+      0.06934163719415665,
+      0.02168823406100273,
+      0.02146434411406517
+    ],
+    "labels_info": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "links": {
+      "Google Images": [
+        "https://www.google.es/search?tbm=isch&q=pot",
+        "https://www.google.es/search?tbm=isch&q=strawberry",
+        "https://www.google.es/search?tbm=isch&q=hip",
+        "https://www.google.es/search?tbm=isch&q=buckeye",
+        "https://www.google.es/search?tbm=isch&q=leaf_beetle"
+      ],
+      "Wikipedia": [
+        "https://en.wikipedia.org/wiki/pot",
+        "https://en.wikipedia.org/wiki/strawberry",
+        "https://en.wikipedia.org/wiki/hip",
+        "https://en.wikipedia.org/wiki/buckeye",
+        "https://en.wikipedia.org/wiki/leaf_beetle"
+      ]
+    }
+  }
+}

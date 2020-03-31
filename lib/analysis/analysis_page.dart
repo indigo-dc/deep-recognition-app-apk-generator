@@ -62,6 +62,8 @@ class AnalysisPageState extends State<AnalysisPage>
   TextEditingController urlController;
   bool is_analysis_in_progress;
 
+  bool did_init_state = false;
+
   @override
   void initState() {
     controller =
@@ -97,6 +99,7 @@ class AnalysisPageState extends State<AnalysisPage>
       });
     });
     super.initState();
+    did_init_state = true;
   }
 
   @override
@@ -164,6 +167,7 @@ class AnalysisPageState extends State<AnalysisPage>
         child: Align(
             alignment: Alignment.centerLeft,
             child: DropdownButton(
+                key: Key("inputTypeChose"),
                 disabledHint: Text(current_data_input),
                 value: current_data_input,
                 items: items,
@@ -234,6 +238,7 @@ class AnalysisPageState extends State<AnalysisPage>
     columns.add(Container(
       margin: EdgeInsets.only(top: 20.0),
       child: RaisedButton(
+        key: Key("analyseButton"),
         color: AppColors.accent_color,
         onPressed: isRequiredDataFilled() && !is_analysis_in_progress ? () => pressedAnalyseButton(current_data_input, data_items, query_values) : null,
         child: Text("Analyse"),
@@ -354,6 +359,7 @@ class AnalysisPageState extends State<AnalysisPage>
             Expanded(
               flex: 8,
               child: TextField(
+                key: Key("urlInput"),
                 enabled: !is_analysis_in_progress,
                 onChanged: (text) {
                   if (text.isEmpty) {
@@ -375,6 +381,7 @@ class AnalysisPageState extends State<AnalysisPage>
               flex: 2,
               child: urlAddButtonVisibility
                   ? Align(
+                      key: Key("addUrlFile"),
                       alignment: Alignment.center,
                       child: RaisedButton(
                         child: Icon(
@@ -907,7 +914,8 @@ class AnalysisPageState extends State<AnalysisPage>
 
   //loading from JSON file from assets
   Future<Post> loadPredictEndpointInfo() async {
-    return await AssetsManager.getPredictEndpointInfo();
+    Map<String, dynamic> json = await AssetsManager.loadJsonAsset("assets/res/predict.json");
+    return Post.fromJson(json['post']);
   }
 
   @override
