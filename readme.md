@@ -1,7 +1,7 @@
 # DEEP Recognition App APK Generator
 This repository contains sources of DEEP Recognition App APK Generator project. With these sources it is possible to build a mobile application that can work on both iOS and Android. App allows to make predictions of given input. Whole project consist of:
 
-* Mobile application which written in [Flutter](https://flutter.dev/)
+* Mobile application written in [Flutter](https://flutter.dev/)
 * Python script [apkgenerator.py](apkgenerator.py) 
  
 It is possible to parametrize colors, urls and strings of the app by setting them in the config JSON file which is given as input of the  script. It builds app and on its output the APK file is received. This file can be installed directly on Android device or signed and uploaded to Google Play Store. For iOS it is necessary to build app from sources on your own.
@@ -45,16 +45,13 @@ Download and configure Android SDK. Full instruction [here](https://github.com/c
 
 ```
 wget https://dl.google.com/android/repository/sdk-tools-linux-4333796.zip
-wget https://dl.google.com/android/repository/commandlinetools-linux-6200805_latest.zip
 sudo apt install unzip
 unzip sdk-tools-linux-4333796.zip
-unzip commandlinetools-linux-6200805_latest.zip
 rm sdk-tools-linux-4333796.zip
-rm commandlinetools-linux-6200805_latest.zipam
 mkdir android-sdk
 mv tools android-sdk
 android-sdk/tools/bin/./sdkmanager --update
-android-sdk/tools/bin/./sdkmanager "platforms;android-28" "build-tools;28.0.3" "extras;google;m2repository" "extras;android;m2repository"
+android-sdk/tools/bin/./sdkmanager "platforms;android-29" "build-tools;29.0.3" "extras;google;m2repository" "extras;android;m2repository"
 android-sdk/tools/bin/./sdkmanager --licenses
 export ANDROID_HOME=/home/user/android-sdk
 export PATH=$PATH:$ANDROID_HOME/tools 
@@ -63,15 +60,9 @@ export PATH=$PATH:$ANDROID_HOME/platform-tools
 Download and configure Flutter SDK. Full instruction [here](https://flutter.dev/docs/get-started/install):
 
 ```
-wget https://storage.googleapis.com/flutter_infra/releases/stable/linux/flutter_linux_v1.5.4-hotfix.2-stable.tar.xz
 wget https://storage.googleapis.com/flutter_infra/releases/stable/linux/flutter_linux_v1.12.13+hotfix.8-stable.tar.xz
-
-tar xf flutter_linux_v1.5.4-hotfix.2-stable.tar.xz
 tar xf flutter_linux_v1.12.13+hotfix.8-stable.tar.xz
-
-rm flutter_linux_v1.5.4-hotfix.2-stable.tar.xz
 rm flutter_linux_v1.12.13+hotfix.8-stable.tar.xz
-
 export FLUTTER_HOME=$HOME/flutter
 export PATH=$PATH:$FLUTTER_HOME/bin
 sudo apt-get install lib32stdc++6
@@ -83,8 +74,6 @@ Install git and clone repository:
 ```
 sudo apt install git
 git clone https://github.com/indigo-dc/deep-recognition-app-apk-generator.git
-[temp]git clone https://git.man.poznan.pl/stash/scm/~skoba/deep_app.git
-cd deep-recognition-app-apk-generator
 ```
 ### Running script
 There are two necessary arguments while running script. Succesfully generated APK file is located in `build/app/outputs/apk/release`
@@ -94,25 +83,23 @@ python3 apkgenerator.py {android_project_path} {json_path}
 ```
 
 ## Customization
-There are 10 parameters for customizing the app. It's possible to set name, main label, main image, version name, icon, API urls, main colors and icon of the app. 
+There are 8 parameters for customizing the app. It's possible to set name, main label, version name, icon, swagger_url, main colors and icon of the app. 
 
 ### JSON Structure
 JSON file with parameters to set in the app contains following fields:
 
 * `app_name` - name of the app,
 * `main_activity_label` - text displayed in the app's top bar,
-* `main_activity_image_url` - url of the png image displayed in the main activity (960x960),
-* `api_root_url` - root url of the API,
-* `api_post_endpoint` - full path of the API's endpoint,
 * `primary_color` - hex code of the primary color,
 * `primary_dark_color` - hex code of the primary dark color,
 * `accent_color` - hex code of the accent color,
 * `version_name` - name of the app version,
-* `icon_image_url` - url of the png image app's icon (512x512).
+* `icon_image_url` - url of the png image app's icon (512x512),
+* `swagger_url` - url of swagger.json file with api definition.
 
-Example JSON [here](example_test.json).
+Example JSON file [here](example_test.json).
 
 ### Design Customization
 Customization of design parameters on screenshots.
 
-![alt text](https://box.psnc.pl/f/c03786a80e/?raw=1)
+![alt text](https://box.psnc.pl/f/a7c56d3ff1/?raw=1)
