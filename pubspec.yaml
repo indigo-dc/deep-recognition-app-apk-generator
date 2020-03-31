@@ -56,9 +56,9 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/plant.png
-    - assets/test/response_for_test_low.json
-    - assets/test/response_for_test_high.json
-    - assets/test/predict.json
+    - assets/res/test/response_for_test_low.json
+    - assets/res/test/response_for_test_high.json
+    - assets/res/test/predict.json
   #  - assets/res/predict.json
   #  - images/a_dot_ham.jpeg
 

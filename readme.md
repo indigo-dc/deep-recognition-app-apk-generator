@@ -1,8 +1,23 @@
 # DEEP Recognition App APK Generator
-This repository contains sources of DEEP Recognition App written using Flutter and Python script [apkgenerator.py](apkgenerator.py) used to build and generate APK file. It allows parametrize design, urls and strings of the app by setting them in the JSON file.
+This repository contains sources of DEEP Recognition App APK Generator project. With these sources it is possible to build a mobile application that can work on both iOS and Android. App allows to make predictions of given input. Whole project consist of:
+
+* Mobile application which written in [Flutter](https://flutter.dev/)
+* Python script [apkgenerator.py](apkgenerator.py) 
+ 
+It is possible to parametrize colors, urls and strings of the app by setting them in the config JSON file which is given as input of the  script. It builds app and on its output the APK file is received. This file can be installed directly on Android device or signed and uploaded to Google Play Store. For iOS it is necessary to build app from sources on your own.
+
+For now mobile app works with seven types of DEEP API-V2:
+
+* [Audio Classifier](https://marketplace.deep-hybrid-datacloud.eu/modules/deep-oc-audio-classification-tf.html)
+* [Conus Species Classifier](https://marketplace.deep-hybrid-datacloud.eu/modules/deep-oc-conus-classification-tf.html)
+* [Image Classifier](https://marketplace.deep-hybrid-datacloud.eu/modules/deep-oc-image-classification-tf.html)
+* [Phytoplankton Species Classifier](https://marketplace.deep-hybrid-datacloud.eu/modules/deep-oc-phytoplankton-classification-tf.html)
+* [Plants Species Classifier](https://marketplace.deep-hybrid-datacloud.eu/modules/deep-oc-plants-classification-tf.html)
+* [Seed Species Classifier](https://marketplace.deep-hybrid-datacloud.eu/modules/deep-oc-seeds-classification-tf.html)
+* [Dogs Breed Detector](https://marketplace.deep-hybrid-datacloud.eu/modules/deep-oc-dogs-breed-det.html)
 
 ## Installation and Usage
-To properly build project and generate apk, it is necessary to install following tools:
+To properly build project and generate APK, it is necessary to install following tools:
 
 * Python 3 and pip installer
 * JDK 8
@@ -10,7 +25,7 @@ To properly build project and generate apk, it is necessary to install following
 * Working Flutter SDK
 * Git client
 
-### Instruction for Linux users.
+### Configuration and installation for Linux users.
 First install pip installer for Python 3 using apt:
 
 ```
@@ -30,9 +45,12 @@ Download and configure Android SDK. Full instruction [here](https://github.com/c
 
 ```
 wget https://dl.google.com/android/repository/sdk-tools-linux-4333796.zip
+wget https://dl.google.com/android/repository/commandlinetools-linux-6200805_latest.zip
 sudo apt install unzip
 unzip sdk-tools-linux-4333796.zip
+unzip commandlinetools-linux-6200805_latest.zip
 rm sdk-tools-linux-4333796.zip
+rm commandlinetools-linux-6200805_latest.zipam
 mkdir android-sdk
 mv tools android-sdk
 android-sdk/tools/bin/./sdkmanager --update
@@ -46,8 +64,14 @@ Download and configure Flutter SDK. Full instruction [here](https://flutter.dev/
 
 ```
 wget https://storage.googleapis.com/flutter_infra/releases/stable/linux/flutter_linux_v1.5.4-hotfix.2-stable.tar.xz
+wget https://storage.googleapis.com/flutter_infra/releases/stable/linux/flutter_linux_v1.12.13+hotfix.8-stable.tar.xz
+
 tar xf flutter_linux_v1.5.4-hotfix.2-stable.tar.xz
+tar xf flutter_linux_v1.12.13+hotfix.8-stable.tar.xz
+
 rm flutter_linux_v1.5.4-hotfix.2-stable.tar.xz
+rm flutter_linux_v1.12.13+hotfix.8-stable.tar.xz
+
 export FLUTTER_HOME=$HOME/flutter
 export PATH=$PATH:$FLUTTER_HOME/bin
 sudo apt-get install lib32stdc++6
@@ -59,6 +83,7 @@ Install git and clone repository:
 ```
 sudo apt install git
 git clone https://github.com/indigo-dc/deep-recognition-app-apk-generator.git
+[temp]git clone https://git.man.poznan.pl/stash/scm/~skoba/deep_app.git
 cd deep-recognition-app-apk-generator
 ```
 ### Running script

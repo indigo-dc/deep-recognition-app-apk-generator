@@ -10,7 +10,7 @@ void main() {
     WidgetsFlutterBinding.ensureInitialized();
 
     MockRecognitionApi mockRecognitionApi = MockRecognitionApi();
-    PredictResponse predictResponse = await mockRecognitionApi.postPredictData("assets/test/response_for_test_low.json");
+    PredictResponse predictResponse = await mockRecognitionApi.postPredictData("assets/res/test/response_for_test_low.json");
 
     var result = PredictionTitleManager.getTitleForPrediction(predictResponse);
     expect(result, "valley (!)");
@@ -21,7 +21,7 @@ void main() {
     WidgetsFlutterBinding.ensureInitialized();
 
     MockRecognitionApi mockRecognitionApi = MockRecognitionApi();
-    PredictResponse predictResponse = await mockRecognitionApi.postPredictData("assets/test/response_for_test_high.json");
+    PredictResponse predictResponse = await mockRecognitionApi.postPredictData("assets/res/test/response_for_test_high.json");
 
     var result = PredictionTitleManager.getTitleForPrediction(predictResponse);
     expect(result, "pot");

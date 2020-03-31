@@ -31,7 +31,7 @@ void main() {
     expect(analysisPageState.did_init_state, isTrue);
 
     analysisPageState.post = await tester.runAsync(()async{
-      Map<String, dynamic> jsonPredict = await AssetsManager.loadJsonFile("../assets/test/predict.json");
+      Map<String, dynamic> jsonPredict = await AssetsManager.loadJsonFile("../assets/res/test/predict.json");
       return analysisPageState.post = Post.fromJson(jsonPredict["post"]);
     });
 
