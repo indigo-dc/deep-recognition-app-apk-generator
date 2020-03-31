@@ -1,4 +1,4 @@
-# DEEP Recognition App APK Generator
+# [DEEP Recognition App APK Generator](#info)
 This repository contains sources of DEEP Recognition App APK Generator project. With these sources it is possible to build a mobile application that can work on both iOS and Android. App allows to make predictions of given input. Whole project consist of:
 
 * Mobile application written in [Flutter](https://flutter.dev/)
@@ -16,7 +16,7 @@ For now mobile app works with seven types of DEEP API-V2:
 * [Seed Species Classifier](https://marketplace.deep-hybrid-datacloud.eu/modules/deep-oc-seeds-classification-tf.html)
 * [Dogs Breed Detector](https://marketplace.deep-hybrid-datacloud.eu/modules/deep-oc-dogs-breed-det.html)
 
-## Installation and Usage
+## [Installation and Usage](#installation)
 To properly build project and generate APK, it is necessary to install following tools:
 
 * Python 3 and pip installer
