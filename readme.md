@@ -103,3 +103,5 @@ Example JSON file [here](example_test.json).
 Customization of design parameters on screenshots.
 
 ![alt text](https://box.psnc.pl/f/a7c56d3ff1/?raw=1)
+
+PCSS @ 2020
